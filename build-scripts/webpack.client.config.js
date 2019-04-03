@@ -15,27 +15,12 @@ module.exports = ({
     module: {
         rules: [
             {
-                test: /\.ts(x?)$/,
-                exclude: /node_modules/,
-                use: [
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: ['env', 'react', 'stage-2']
-                        }
-                    },
-                    {
-                        loader: 'ts-loader'
-                    }
-                ]
-            },
-            {
-                test: /\.(js|jsx)$/,
+                test: /\.[tj]sx?$/,
                 exclude: /node_modules/,
                 loader: "babel-loader",
-                options: {
-                    presets: ['env', 'react', 'stage-2']
-                }
+                // options: {
+                // presets: ['env', 'react', 'stage-2']
+                // }
             },
             {
                 test: /\.(woff|woff2|eot|ttf|svg)$/,

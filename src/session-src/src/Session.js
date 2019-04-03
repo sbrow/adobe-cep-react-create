@@ -4,7 +4,7 @@
 
 import EventEmitter from 'events'
 import scriptLoader from './ScriptLoader'
-import DataManagers from './managers/DataManagers.js'
+import DataManagers from './managers/DataManagers'
 /**
  * the main plugin session. This can enter the node modules as
  * well as the host
@@ -12,7 +12,7 @@ import DataManagers from './managers/DataManagers.js'
  */
 class Session {
 
-    _managers = new DataManagers()
+    _managers = new DataManagers();
 
     constructor() {
         //super()
@@ -71,6 +71,9 @@ class Session {
 
         scriptLoader.evalScript('test_host', obj).then((res) => {
             this.log('result is ' + res)
+        })
+        scriptLoader.evalScript('testAlert', obj).then((res) => {
+            this.log('succeeded.')
         })
     }
 
