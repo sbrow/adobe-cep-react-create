@@ -31,6 +31,8 @@ class Session {
         // load jsx file dynamically
         this.log('loading the main jsx file')
         scriptLoader.loadJSX('main.jsx')
+        this.log('loading the test jsx file')
+        scriptLoader.loadJSX('test.jsx')
 
         // some testing
         this.test()
@@ -81,9 +83,9 @@ class Session {
      */
     invokePlugin(options) {
         const { folderPath, isFlattenChecked,
-                isInfoChecked, isInspectVisibleChecked,
-                isMasksChecked, isTexturesChecked,
-                isMeaningfulNamesChecked, isHierarchicalChecked} = options
+            isInfoChecked, isInspectVisibleChecked,
+            isMasksChecked, isTexturesChecked,
+            isMeaningfulNamesChecked, isHierarchicalChecked } = options
 
         // i reparse everything to detect failures
         const pluginData = {
@@ -101,12 +103,12 @@ class Session {
         return new Promise((resolve, reject) => {
 
             scriptLoader.evalScript('invoke_document_worker', pluginData)
-                        .then((res) => {
-                            resolve(JSON.parse(res))
-                        })
-                        .catch(err => {
-                            reject(err)
-                        })
+                .then((res) => {
+                    resolve(JSON.parse(res))
+                })
+                .catch(err => {
+                    reject(err)
+                })
 
         })
 
