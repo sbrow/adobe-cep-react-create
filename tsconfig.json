@@ -2,6 +2,7 @@
     "compilerOptions": {
         "jsx": "react",
         "allowJs": true
+        // "allowSyntheticDefaultImports": true
     },
     "include": [
         "./src/client-src/**/*"
