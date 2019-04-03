@@ -2,7 +2,7 @@
   "name": "cep-test",
   "version": "1.0.0",
   "description": "demo for CEP",
-  "main": "./client-src/src/index.js",
+  "main": "./client-src/src/index.jsx",
   "scripts": {
     "build": "node ./scripts/build.js",
     "start": "npm run client:dev-server",
@@ -21,6 +21,7 @@
   "author": "Tomer Shalev (HendrixString)",
   "license": "ISC",
   "devDependencies": {
+    "@types/react": "^16.8.10",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
@@ -46,6 +47,8 @@
     "@material-ui/icons": "^2.0.0",
     "console-feed": "^2.8.3",
     "react": "^16.4.1",
-    "react-dom": "^16.4.1"
+    "react-dom": "^16.4.1",
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.4.1"
   }
 }

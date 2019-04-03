@@ -1,12 +1,16 @@
-if(typeof($)=='undefined')
-	$={}
+#include "./test.jsx"
+
+if (typeof($) == 'undefined')
+    $ = {}
 
 $._ext = {
     //Evaluate a file and catch the exception.
-    evalFile : function(path) {
+    evalFile: function(path) {
         try {
             $.evalFile(path);
-        } catch (e) {alert("Exception:" + e)}
+        } catch (e) {
+            alert("Exception:" + e)
+        }
     },
     // Evaluate all the files in the given folder
     evalFiles: function(jsxFolderPath) {
@@ -18,6 +22,9 @@ $._ext = {
                 $._ext.evalFile(jsxFile)
             }
         }
+    },
+    testAlert: function() {
+        testAlert()
     }
 }
 

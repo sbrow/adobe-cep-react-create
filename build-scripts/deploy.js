@@ -10,7 +10,7 @@ const pluginConfig = require('../pluginrc.js')
 const distFolder = path.join(pluginConfig.destinationFolder, pluginConfig.extensionBundleId)
 const srcFolder = pluginConfig.sourceFolder
 var env = utils.resolveEnv()
-const isDev = env==='development'
+const isDev = env === 'development'
 const isWindows = utils.resolveWindows()
 const extensionBundleId = pluginConfig.extensionBundleId
 const resolvedTargetFolder = resolveDeploymentFolder()
@@ -26,7 +26,7 @@ function deploy() {
 
     cleanTarget(resolvedTargetFolder)
 
-    if(isDev)
+    if (isDev)
         deployDevMode()
     else
         deployProdMode()
@@ -56,7 +56,7 @@ function resolveExtensionFolder() {
     if (isWindows) {
         return 'C:\\Program Files (x86)\\Common Files\\Adobe\\CEP\\extensions';
     } else {
-        return path.join(os.homedir(), 'Library/Application Support/Adobe/CEP/extensions')
+        return '/Library/Application Support/Adobe/CEP/extensions';
     }
 
 }
@@ -70,7 +70,7 @@ function cleanTarget(target) {
     utils.log_progress('cleaning target')
 
     try {
-        if(fs.existsSync(target) && fs.lstatSync(target).isSymbolicLink())
+        if (fs.existsSync(target) && fs.lstatSync(target).isSymbolicLink())
             fs.unlinkSync(target)
         utils.deleteFolderRecursive(target)
     } catch (err) {
@@ -85,20 +85,20 @@ function cleanTarget(target) {
 function deployDevMode() {
     try {
         utils.log_progress('patching')
-        execSync('defaults write com.adobe.CSXS.15 PlayerDebugMode 1', {stdio:[0,1,2]})
-        execSync('defaults write com.adobe.CSXS.14 PlayerDebugMode 1', {stdio:[0,1,2]})
-        execSync('defaults write com.adobe.CSXS.13 PlayerDebugMode 1', {stdio:[0,1,2]})
-        execSync('defaults write com.adobe.CSXS.12 PlayerDebugMode 1', {stdio:[0,1,2]})
-        execSync('defaults write com.adobe.CSXS.11 PlayerDebugMode 1', {stdio:[0,1,2]})
-        execSync('defaults write com.adobe.CSXS.10 PlayerDebugMode 1', {stdio:[0,1,2]})
-        execSync('defaults write com.adobe.CSXS.9 PlayerDebugMode 1', {stdio:[0,1,2]})
-        execSync('defaults write com.adobe.CSXS.8 PlayerDebugMode 1', {stdio:[0,1,2]})
-        execSync('defaults write com.adobe.CSXS.7 PlayerDebugMode 1', {stdio:[0,1,2]})
-        execSync('defaults write com.adobe.CSXS.6 PlayerDebugMode 1', {stdio:[0,1,2]})
-        execSync('defaults write com.adobe.CSXS.5 PlayerDebugMode 1', {stdio:[0,1,2]})
-        execSync('defaults write com.adobe.CSXS.4 PlayerDebugMode 1', {stdio:[0,1,2]})
+        execSync('defaults write com.adobe.CSXS.15 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        execSync('defaults write com.adobe.CSXS.14 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        execSync('defaults write com.adobe.CSXS.13 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        execSync('defaults write com.adobe.CSXS.12 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        execSync('defaults write com.adobe.CSXS.11 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        execSync('defaults write com.adobe.CSXS.10 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        execSync('defaults write com.adobe.CSXS.9 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        execSync('defaults write com.adobe.CSXS.8 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        execSync('defaults write com.adobe.CSXS.7 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        execSync('defaults write com.adobe.CSXS.6 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        execSync('defaults write com.adobe.CSXS.5 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        execSync('defaults write com.adobe.CSXS.4 PlayerDebugMode 1', { stdio: [0, 1, 2] })
 
-    } catch(err) {
+    } catch (err) {
         utils.log_progress(err, 'red')
     }
 
@@ -107,7 +107,7 @@ function deployDevMode() {
         var type = isWindows ? 'junction' : 'dir'
 
         fs.symlinkSync(distFolder, resolvedTargetFolder, type)
-    } catch(err) {
+    } catch (err) {
         utils.log_progress(err, 'red')
     }
 
@@ -123,7 +123,7 @@ function deployProdMode() {
     try {
         utils.copyRecursiveSync(distFolder, resolvedTargetFolder)
 
-    } catch(err) {
+    } catch (err) {
         utils.log_progress(err, 'red')
     }
 
