@@ -2,7 +2,7 @@
  * @author Tomer Riko Shalev
  */
 
-import EventEmitter from 'events'
+import { EventEmitter } from 'events'
 import scriptLoader from './ScriptLoader'
 import DataManagers from './managers/DataManagers'
 /**
@@ -10,7 +10,7 @@ import DataManagers from './managers/DataManagers'
  * well as the host
  *
  */
-class Session {
+export class Session {
 
     _managers = new DataManagers();
 
@@ -72,7 +72,10 @@ class Session {
         scriptLoader.evalScript('test_host', obj).then((res) => {
             this.log('result is ' + res)
         })
-        scriptLoader.evalScript('testAlert', obj).then((res) => {
+    }
+
+    testAlert() {
+        scriptLoader.evalScript('testAlert', null).then((res) => {
             this.log('succeeded.')
         })
     }

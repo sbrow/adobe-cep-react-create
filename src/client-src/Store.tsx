@@ -1,6 +1,32 @@
 import * as React from "react";
 import { createContext, useReducer } from "react";
+import { log } from "./index";
 import { Action, State } from "./Types";
+
+function setDeepValue(obj: object, path: string, val: any) {
+    const props = path.split(".");
+    const n = props.length - 1;
+    for (let i = 0; i < n; ++i) {
+        const key = (obj instanceof Array) ? `${Number(props[i])}` : props[i];
+        const next = (i + 1 != n) ? Number(props[i + 1]) : null;
+        const _default = (!(key in obj) && !isNaN(next)) ? [] : {};
+        obj = obj[key] = obj[key] || _default;
+    }
+    obj[props[n]] = val;
+    return obj;
+}
+
+function idToPath(id: string) {
+    id = id.replace(/-/g, ".");
+    const elems = id.split(".");
+    for (let i = 0; i < elems.length; i++) {
+        const n = Number(elems[i]);
+        if (!isNaN(n)) {
+            elems[i] = `${n - 1}`;
+        }
+    }
+    return elems.join(".");
+}
 
 /**
  * @returns {number} Returns the smaller of a and b.
@@ -25,6 +51,16 @@ interface SetAction extends Action {
     };
 }
 
+function updateBlocks(state: State, action: SetAction) {
+    while (state.blocks.length != action.payload.value) {
+        if (state.blocks.length < action.payload.value) {
+            state.blocks.push({});
+        } else {
+            state.blocks.pop();
+        }
+    }
+}
+
 /**
  * Handles actions for storeState
  *
@@ -37,32 +73,12 @@ function reducer(state: State, action: SetAction): State {
     if (action.type !== "set") {
         throw new Error(`Type "${action.type}" not recognized`);
     }
-    switch (action.payload.key) {
-        case "numBlocks":
-            newState.blocks = new Array(Number(action.payload.value));
-            const last = min(state.blocks.length, newState.blocks.length);
-            for (let i = 0; i < last; i++) {
-                newState.blocks[i] = state.blocks[i];
-            }
-            for (let i = last - 1; i < newState.blocks.length; i++) {
-                newState.blocks[i] = {};
-            }
-        case "level":
-            newState[action.payload.key] = Number(action.payload.value);
-            break;
-        default:
-            // const blockNum = blockNumber(action.payload.key);
-            // if (blockNum !== 0) {
-            //     newState.blocks[blockNum - 1][action.payload.key] = action.payload.value;
-            // } else {
-            newState[action.payload.key] = action.payload.value;
-        // }
+    setDeepValue(newState, idToPath(action.payload.key), action.payload.value);
+    if (action.payload.key.match("numBlocks")) {
+        updateBlocks(newState, action);
     }
     return newState;
 }
-
-type butt = (state: State) => string;
-type Type = React.Dispatch<SetAction> | ((state: State, action: Action) => State);
 
 // export const StoreContext = createContext<[State, (state: State, action: SetAction) => State]>([initState, reducer]);
 
@@ -75,9 +91,28 @@ export const initState = {
     blocks: [{}],
     level: 1,
     numBlocks: 1,
+
 };
 
-export const StoreContext = createContext<[State, React.Dispatch<SetAction>]>([initState, defaultDispatcher]);
+export function get(state: State, key: string): any {
+    let ret: any = state;
+    const props = idToPath(key).split(".");
+    for (const prop of props) {
+        if (prop in ret) {
+            ret = ret[prop];
+        } else {
+            log.error(`"${key}" not in "${JSON.stringify(state)}"`);
+            return undefined;
+        }
+    }
+    return ret;
+
+}
+
+export const StoreContext = createContext<[State, React.Dispatch<SetAction>]>([
+    initState,
+    () => { throw new Error("no reducer has been set"); },
+]);
 
 export function Store({ children }: { children: any; }): JSX.Element {
     const [state, dispatch] = useReducer(reducer, initState);

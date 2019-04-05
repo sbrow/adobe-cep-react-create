@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StoreContext } from "../Store";
+import { get, StoreContext } from "../Store";
 
 interface PathBoxProps {
     id: string;
@@ -15,16 +15,11 @@ export function PathBox(props: PathBoxProps): JSX.Element {
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch({ type: `set`, payload: { key: props.id, value: event.target.value } });
     };
-    let localState = state;
-    if (props.parent !== undefined) {
-        localState = props.parent;
-    }
     return (
-        <div>
-            <label htmlFor={props.id}>{props.label}
-                <input id={props.id} type="text" value={localState[props.id]} onChange={onChange} />
-                <button type="button">Select</button>
-            </label>
+        <div class="row">
+            <label htmlFor={props.id}>{props.label}</label>
+            <input id={props.id} type="text" value={get(state, props.id)} onChange={onChange} />
+            <button type="button">Select</button>
         </div>
     );
 }

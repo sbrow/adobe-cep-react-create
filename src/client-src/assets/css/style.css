@@ -1,3 +1,14 @@
+:root {
+  --mar: 5
+}
+
+form   { display: table;      }
+.row   { display: table-row; margin-top: var(--mar); margin-bottom: var(--mar); }
+label  { display: table-cell; }
+select { display: table-cell; }
+input  { display: table-cell; }
+button { display: table-cell; }
+
 body {
     /* margin: 0px; */
     /* overflow: hidden */

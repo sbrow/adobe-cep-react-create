@@ -12,7 +12,7 @@ class Controller {
     constructor() {
         //super()
 
-        this.init()
+        this.init();
     }
 
     /**
@@ -20,10 +20,10 @@ class Controller {
      *
      */
     init() {
-        this.log('client controller is initing...')
-        this.log(`do we have session ? ${this.hasSession()}`)
+        this.log("client controller is initing...");
+        this.log(`do we have session ? ${this.hasSession()}`);
 
-        this.log('client controller has inited')
+        this.log("client controller has inited");
     }
 
     /**
@@ -34,17 +34,17 @@ class Controller {
      * @return {object} describes how well the execution of plugin was
      */
     invokePlugin(options) {
-        this.log('invokePlugin')
-        console.log(options)
+        this.log("invokePlugin");
+        console.log(options);
 
-        if(!this.hasSession())
+        if (!this.hasSession()) {
             return
+        }
 
         session.invokePlugin(options)
             .then(res => console.log(res))
-            .catch(err => console.log(err))
+            .catch(err => console.log(err));
     }
-
 
     /**
      * get logz - get raw logz from log manager
@@ -52,10 +52,11 @@ class Controller {
      * @return {array<Object>}  description
      */
     get logz() {
-        if(!this.hasSession())
+        if (!this.hasSession()) {
             return []
+        }
 
-        return session.managers.log.rawLogs
+        return session.managers.log.rawLogs;
     }
 
     /**
@@ -64,7 +65,7 @@ class Controller {
      * @return {boolean} true/false
      */
     hasSession() {
-        return window.session!==undefined
+        return window.session !== undefined;
     }
 
     /**
@@ -73,15 +74,15 @@ class Controller {
      * @param  {string} val what to log
      */
     log(val) {
-        console.log(`${this.name} ${val}`)
+        console.log(`${this.name} ${val}`);
     }
 
     get name() {
-        return 'Client Controller:: '
+        return "Client Controller:: "
     }
 
 }
 
-var controller = new Controller()
+var controller = new Controller();
 
-export default controller
+export default controller;

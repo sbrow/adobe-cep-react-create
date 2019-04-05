@@ -16,7 +16,7 @@
     "release:prod": "npm run build:prod && npm run deploy:prod && npm run archive",
     "postinstall": "mkdir -p src/session-src/node_modules",
     "b": "babel ./client/js --out-dir ./client/out",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ts-mocha ./src/client-src/test/test.spec.ts"
   },
   "author": "Tomer Shalev (HendrixString)",
   "license": "ISC",
@@ -27,7 +27,11 @@
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.3.3",
+    "@types/events": "^3.0.0",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.13.0",
     "@types/react": "^16.8.10",
+    "@types/winston": "^2.4.4",
     "chalk": "^2.4.1",
     "copy-webpack-plugin": "^4.5.2",
     "css-loader": "^1.0.0",
@@ -47,9 +51,13 @@
     "@material-ui/icons": "^2.0.0",
     "babel-loader": "^8.0.5",
     "console-feed": "^2.8.6",
+    "mocha": "^6.0.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
+    "rewire": "^4.0.1",
     "ts-loader": "^5.3.3",
-    "typescript": "^3.4.1"
+    "ts-mocha": "^6.0.0",
+    "typescript": "^3.4.1",
+    "winston": "^3.2.1"
   }
 }
