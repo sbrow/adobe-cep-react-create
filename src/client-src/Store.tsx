@@ -1,7 +1,56 @@
 import * as React from "react";
 import { createContext, useReducer } from "react";
 import { log } from "./index";
-import { Action, State } from "./Types";
+import { Action, IFormState, SetAction } from "./Types";
+
+export class State {
+    public level: number;
+    public numBlocks: number;
+    public intro: string;
+    public warmup: string;
+    public blocks: Array<{
+        intro?: string;
+        exercises?: string[];
+    }>;
+    public outro: string;
+
+    constructor(init: IFormState) {
+        this.level = init.level;
+        this.numBlocks = init.numBlocks;
+        this.intro = init.intro;
+        this.warmup = init.warmup;
+        this.blocks = init.blocks;
+        this.outro = init.outro;
+    }
+
+    public get(key: string) {
+        let ret: any = this;
+        const props = idToPath(key).split(".");
+        for (const prop of props) {
+            if (prop in ret) {
+                ret = ret[prop];
+            } else {
+                log.error(`"${key}" not in "${JSON.stringify(this)}"`);
+                return undefined;
+            }
+        }
+        return ret;
+    }
+
+    public set(path: string, value: any) {
+        setDeepValue(this, path, value);
+    }
+
+    public updateBlocks() {
+        while (this.blocks.length != this.numBlocks) {
+            if (this.blocks.length < this.numBlocks) {
+                this.blocks.push({});
+            } else {
+                this.blocks.pop();
+            }
+        }
+    }
+}
 
 function setDeepValue(obj: object, path: string, val: any) {
     const props = path.split(".");
@@ -29,39 +78,6 @@ function idToPath(id: string) {
 }
 
 /**
- * @returns {number} Returns the smaller of a and b.
- */
-function min(a: number, b: number): number {
-    return (a < b) ? a : b;
-}
-
-function blockNumber(id: string): number {
-    const matches = id.match(/^(block-)(\d)(-)/);
-    if (matches !== null) {
-        return Number(matches[2]);
-    }
-    return 0;
-}
-
-interface SetAction extends Action {
-    type: "set";
-    payload: {
-        key: string,
-        value: any,
-    };
-}
-
-function updateBlocks(state: State, action: SetAction) {
-    while (state.blocks.length != action.payload.value) {
-        if (state.blocks.length < action.payload.value) {
-            state.blocks.push({});
-        } else {
-            state.blocks.pop();
-        }
-    }
-}
-
-/**
  * Handles actions for storeState
  *
  * @param {*} state
@@ -69,47 +85,29 @@ function updateBlocks(state: State, action: SetAction) {
  * @returns {*}
  */
 function reducer(state: State, action: SetAction): State {
-    const newState = { ...state };
     if (action.type !== "set") {
         throw new Error(`Type "${action.type}" not recognized`);
     }
-    setDeepValue(newState, idToPath(action.payload.key), action.payload.value);
-    if (action.payload.key.match("numBlocks")) {
-        updateBlocks(newState, action);
+
+    const newState = new State({ ...state });
+    const n = Number(action.payload.value);
+
+    if (!isNaN(n)) {
+        action.payload.value = n;
     }
+    newState.set(idToPath(action.payload.key), action.payload.value);
+    newState.updateBlocks();
     return newState;
 }
 
-// export const StoreContext = createContext<[State, (state: State, action: SetAction) => State]>([initState, reducer]);
-
-/** @throws "no reducer has been set" */
-function defaultDispatcher(): void {
-    throw new Error("no reducer has been set");
-}
-
-export const initState = {
+export const initState = new State({
     blocks: [{}],
     level: 1,
     numBlocks: 1,
 
-};
+});
 
-export function get(state: State, key: string): any {
-    let ret: any = state;
-    const props = idToPath(key).split(".");
-    for (const prop of props) {
-        if (prop in ret) {
-            ret = ret[prop];
-        } else {
-            log.error(`"${key}" not in "${JSON.stringify(state)}"`);
-            return undefined;
-        }
-    }
-    return ret;
-
-}
-
-export const StoreContext = createContext<[State, React.Dispatch<SetAction>]>([
+export const StoreContext = createContext<[IFormState, React.Dispatch<SetAction>]>([
     initState,
     () => { throw new Error("no reducer has been set"); },
 ]);

@@ -1,7 +1,7 @@
 export interface Action {
     type: string;
 }
-export interface State {
+export interface IFormState {
     level: number;
     numBlocks: number;
     [key: string]: any;

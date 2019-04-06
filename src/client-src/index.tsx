@@ -22,4 +22,4 @@ export const log = createLogger({
 });
 console.log = window.console.log;
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<App title="Video Builder" />, document.getElementById("root"));

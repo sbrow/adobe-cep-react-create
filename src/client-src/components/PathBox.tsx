@@ -18,7 +18,7 @@ export function PathBox(props: PathBoxProps): JSX.Element {
     return (
         <div class="row">
             <label htmlFor={props.id}>{props.label}</label>
-            <input id={props.id} type="text" value={get(state, props.id)} onChange={onChange} />
+            <input id={props.id} type="text" value={state.get(props.id)} onChange={onChange} />
             <button type="button">Select</button>
         </div>
     );

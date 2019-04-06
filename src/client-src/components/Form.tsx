@@ -25,12 +25,16 @@ export function Form(): JSX.Element {
     const state = useContext(StoreContext)[0];
     return (
         <Store>
+            <h1>{document.title}</h1>
             <form>
+                <h2>Intro</h2>
                 <Dropdown id="level" label="Workout Level" options={[1, 2, 3]} />
                 <Dropdown id="numBlocks" label="# of Blocks" options={[1, 2, 3]} />
                 <PathBox id="intro" label="Intro" />
                 <PathBox id="warmup" label="warmup" />
+                <h2>Blocks</h2>
                 <Blocks />
+                <h2>Conclusion</h2>
                 <PathBox id="outro" label="Outro" />
                 <Button />
             </form>

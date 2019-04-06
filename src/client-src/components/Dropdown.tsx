@@ -35,7 +35,7 @@ export function Dropdown(props: DropdownProps): JSX.Element {
     return (
         <div id={props.id} class="row">
             <label htmlFor={`${props.id}-data`}>{props.label}</label>
-            <select id={`${props.id}-data`} value={get(state, props.id)} onChange={onChange} {...props.id}>
+            <select id={`${props.id}-data`} value={state.get(props.id)} onChange={onChange} {...props.id}>
                 {props.options.map((listValue) => {
                     return (
                         <Option value={listValue} />

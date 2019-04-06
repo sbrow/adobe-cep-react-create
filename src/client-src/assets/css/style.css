@@ -12,6 +12,7 @@ button { display: table-cell; }
 body {
     /* margin: 0px; */
     /* overflow: hidden */
+    align-content: center;
     background-color: rgb(35,35,35);
     color: white
   }
