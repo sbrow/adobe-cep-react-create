@@ -5,13 +5,16 @@ import { Blocks } from "./Blocks";
 import { Dropdown } from "./Dropdown";
 import { PathBox } from "./PathBox";
 
+// @ts-ignore
+const session: Session = window.session;
+
 function Button(): JSX.Element {
     // const [state, dispatch] = useContext(StoreContext);
     const state = useContext(StoreContext)[0];
     const onClick = () => {
         try {
             state.insert().then((res) => {
-                window.alert(res);
+                window.alert(`state.insert() returned ${JSON.stringify(res)}`);
             });
         } catch (err) {
             window.alert(err);
@@ -25,6 +28,22 @@ function Button(): JSX.Element {
 function Display() {
     const state = useContext(StoreContext)[0];
     return (<pre>{JSON.stringify(state, null, 2)}</pre>);
+}
+
+function Library() {
+    const items = session.run("listProjectItems", null).then((res) => {
+        window.alert(`res ${JSON.stringify(res)}`);
+        return res;
+    });
+    window.alert(`items ${JSON.stringify(items)}`);
+
+    return (
+        <ul>
+            {items.map((item) => {
+                return <li>{item}</li>;
+            })}
+        </ul>
+    );
 }
 
 export function Form(): JSX.Element {
@@ -45,6 +64,7 @@ export function Form(): JSX.Element {
                 <Button />
             </form>
             <Display />
+            {/* <Library /> */}
         </StoreProvider>
     );
 }

@@ -22,21 +22,49 @@ function test_host(obj_string) {
 	return "hola from extendscript " + res.name;
 }
 
+function listProjectItems(obj) {
+	var ret = [];
+
+	const children = app.project.rootItem.children;
+	for (var i = 0; i < children.numItems; i++) {
+		var child = children[i];
+		ret.push(child.name + ":" + child.type)
+	}
+	return ret;
+}
+
 function insertClips(clips) {
 	const project = app.project;
 	const lib = project.rootItem.children;
+	const inserted = 0;
+	try {
+		if (typeof clips === "string") {
+			clips = JSON.parse(clips);
+		}
 
-	var inTime = 0;
-	for (var i = 0; i < clips.length; i++) {
-		var clip = clips[i];
-		for (var j = 0; j < lib.numItems; j++) {
-			var child = lib[i];
-			if (child.name = clip) {
-				inTime += insertClip(child, inTime);
-				alert("inTime: " + String(inTime));
+		alert(JSON.stringify(
+			{
+				clips: clips,
+				type: (typeof clips),
+				arr: (clips instanceof Array),
+				length: clips.length
+			}))
+		var inTime = 0;
+		for (var i = 0; i < clips.length; i++) {
+			var clip = clips[i];
+			for (var j = 0; j < lib.numItems; j++) {
+				var child = lib[i];
+				if (child.name === clip) {
+					inTime = insertClip(child, inTime);
+					inserted++;
+					break;
+				}
 			}
 		}
+	} catch (err) {
+		alert("error in insertClips: " + err)
 	}
+	return inserted;
 }
 
 function insert(clip, inTime) {

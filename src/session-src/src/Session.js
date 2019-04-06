@@ -31,8 +31,8 @@ export class Session {
         // load jsx file dynamically
         this.log("loading the main jsx file");
         scriptLoader.loadJSX("main.jsx");
-        this.log("loading the test jsx file");
-        scriptLoader.loadJSX("test.jsx");
+        // this.log("loading the test jsx file");
+        // scriptLoader.loadJSX("test.jsx");
 
         // some testing
         this.test();
