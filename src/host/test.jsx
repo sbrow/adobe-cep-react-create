@@ -43,15 +43,15 @@ function stripAudio() {
     item.createSubClip("clip", item.startTime(), item.getOutPoint(), 0, 0, 1);
 }
 
-function insertClip() {
-    const project = app.project;
-    const sequence = project.activeSequence;
-    const video = sequence.videoTracks[0];
-    const clip = projectItem(0);
-    const inTime = 0;
-    const length = inTime + clip.getOutPoint().seconds;
+// function insertClip() {
+//     const project = app.project;
+//     const sequence = project.activeSequence;
+//     const video = sequence.videoTracks[0];
+//     const clip = projectItem(0);
+//     const inTime = 0;
+//     const length = inTime + clip.getOutPoint().seconds;
 
-    video.insertClip(clip, 0);
-    alert(length);
-    return length;
-}
+//     video.insertClip(clip, 0);
+//     alert(length);
+//     return length;
+// }

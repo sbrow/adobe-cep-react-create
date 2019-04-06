@@ -1,5 +1,5 @@
 import * as  React from "react";
-import { StoreContext } from "../Store";
+import { StoreContext } from "../Stores/AppStore";
 import { PathBox } from "./PathBox";
 
 interface BlockProps {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { get, StoreContext } from "../Store";
+import { StoreContext } from "../Stores/AppStore";
 
 interface PathBoxProps {
     id: string;
@@ -19,7 +19,7 @@ export function PathBox(props: PathBoxProps): JSX.Element {
         <div class="row">
             <label htmlFor={props.id}>{props.label}</label>
             <input id={props.id} type="text" value={state.get(props.id)} onChange={onChange} />
-            <button type="button">Select</button>
+            {/* <button type="button">Select</button> */}
         </div>
     );
 }

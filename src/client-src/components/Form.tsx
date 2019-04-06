@@ -1,16 +1,22 @@
-import { stat } from "fs";
-import { func } from "prop-types";
 import * as React from "react";
 import { useContext } from "react";
-import { Store, StoreContext } from "../Store";
+import { StoreContext, StoreProvider } from "../Stores/AppStore";
 import { Blocks } from "./Blocks";
 import { Dropdown } from "./Dropdown";
 import { PathBox } from "./PathBox";
 
 function Button(): JSX.Element {
-    const [state, dispatch] = useContext(StoreContext);
+    // const [state, dispatch] = useContext(StoreContext);
+    const state = useContext(StoreContext)[0];
     const onClick = () => {
-        dispatch({ type: "set", payload: { key: "blocks-1-intro", value: "3" } });
+        try {
+            state.insert().then((res) => {
+                window.alert(res);
+            });
+        } catch (err) {
+            window.alert(err);
+        }
+        // dispatch({ type: "set", payload: { key: "blocks-1-intro", value: "3" } });
     };
 
     return (<button type="button" onClick={onClick}>Click Me!</button>);
@@ -24,7 +30,7 @@ function Display() {
 export function Form(): JSX.Element {
     const state = useContext(StoreContext)[0];
     return (
-        <Store>
+        <StoreProvider>
             <h1>{document.title}</h1>
             <form>
                 <h2>Intro</h2>
@@ -39,6 +45,6 @@ export function Form(): JSX.Element {
                 <Button />
             </form>
             <Display />
-        </Store>
+        </StoreProvider>
     );
 }

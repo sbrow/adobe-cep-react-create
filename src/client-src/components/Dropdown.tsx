@@ -1,6 +1,6 @@
 import { checkPropTypes } from "prop-types";
 import * as React from "react";
-import { get, Store, StoreContext } from "../Store";
+import { StoreContext } from "../Stores/AppStore";
 
 interface OptionProps {
     value: string;
@@ -25,6 +25,7 @@ interface DropdownProps {
 
 /**
  * A Simple dropdown menu, connected to StoreContext.
+ *
  * @param props
  */
 export function Dropdown(props: DropdownProps): JSX.Element {

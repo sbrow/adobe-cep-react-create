@@ -14,3 +14,17 @@ export interface SetAction extends Action {
         value: any,
     };
 }
+
+export interface Block {
+    intro: string;
+    warmup?: string;
+    exercises: string[];
+}
+
+export interface Workout {
+    intro: string;
+    warmup?: string;
+    blocks?: Block[];
+    outro?: string;
+}
+

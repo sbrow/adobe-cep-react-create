@@ -9,13 +9,46 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-#include "./JSON.jsx"
+
+// tslint:disable-next-line: semicolon
+#include "./JSON.jsx";
 
 // alert(JSON.stringify(a))
 
 function test_host(obj_string) {
 	// alert(obj_string)
-	res = JSON.parse(obj_string)
+	res = JSON.parse(obj_string);
 	// alert(res)
-	return 'hola from extendscript ' + res.name
+	return "hola from extendscript " + res.name;
+}
+
+function insertClips(clips) {
+	const project = app.project;
+	const lib = project.rootItem.children;
+
+	var inTime = 0;
+	for (var i = 0; i < clips.length; i++) {
+		var clip = clips[i];
+		for (var j = 0; j < lib.numItems; j++) {
+			var child = lib[i];
+			if (child.name = clip) {
+				inTime += insertClip(child, inTime);
+				alert("inTime: " + String(inTime));
+			}
+		}
+	}
+}
+
+function insert(clip, inTime) {
+	const project = app.project;
+	if (project.activeSequence === undefined) {
+		alert("There is no active sequence.");
+		return;
+	}
+	const sequence = project.activeSequence;
+	const video = sequence.videoTracks[0];
+	const outTime = inTime + Number(clip.getOutPoint().seconds);
+
+	video.insertClip(clip, inTime);
+	return outTime;
 }

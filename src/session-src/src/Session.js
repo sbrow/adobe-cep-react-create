@@ -2,9 +2,9 @@
  * @author Tomer Riko Shalev
  */
 
-import { EventEmitter } from 'events'
-import scriptLoader from './ScriptLoader'
-import DataManagers from './managers/DataManagers'
+import { EventEmitter } from "events"
+import scriptLoader from "./ScriptLoader"
+import DataManagers from "./managers/DataManagers"
 /**
  * the main plugin session. This can enter the node modules as
  * well as the host
@@ -17,7 +17,7 @@ export class Session {
     constructor() {
         //super()
 
-        this.init()
+        this.init();
     }
 
     /**
@@ -26,22 +26,21 @@ export class Session {
      */
     init() {
         // init before everything so I can intercept console.log
-        this._managers.init()
-        this.log('session is initing...')
+        this._managers.init();
+        this.log("session is initing...");
         // load jsx file dynamically
-        this.log('loading the main jsx file')
-        scriptLoader.loadJSX('main.jsx')
-        this.log('loading the test jsx file')
-        scriptLoader.loadJSX('test.jsx')
+        this.log("loading the main jsx file");
+        scriptLoader.loadJSX("main.jsx");
+        this.log("loading the test jsx file");
+        scriptLoader.loadJSX("test.jsx");
 
         // some testing
-        this.test()
+        this.test();
         // var fs = require('fs-extra')
         //console.log(fs)
 
-        this.log('session is inited')
+        this.log("session is inited");
     }
-
 
     /**
      * get data managers
@@ -49,7 +48,7 @@ export class Session {
      * @return {type}  description
      */
     get managers() {
-        return this._managers
+        return this._managers;
     }
 
     /**
@@ -57,7 +56,7 @@ export class Session {
      *
      */
     scriptLoader() {
-        return scriptLoader
+        return scriptLoader;
     }
 
     /**
@@ -66,20 +65,23 @@ export class Session {
      */
     test() {
         var obj = {
-            name: 'tomer'
-        }
+            name: "tomer"
+        };
 
-        scriptLoader.evalScript('test_host', obj).then((res) => {
-            this.log('result is ' + res)
-        })
+        scriptLoader.evalScript("test_host", obj).then((res) => {
+            this.log("result is " + res);
+        });
     }
 
     testAlert() {
-        scriptLoader.evalScript('testAlert', null).then((res) => {
-            this.log('succeeded.')
-        })
+        scriptLoader.evalScript("testAlert", null).then((res) => {
+            this.log("succeeded.");
+        });
     }
 
+    run(fn, arg) {
+        return scriptLoader.evalScript(fn, arg);
+    }
     /**
      * invoke the plugin
      *
@@ -91,7 +93,7 @@ export class Session {
         const { folderPath, isFlattenChecked,
             isInfoChecked, isInspectVisibleChecked,
             isMasksChecked, isTexturesChecked,
-            isMeaningfulNamesChecked, isHierarchicalChecked } = options
+            isMeaningfulNamesChecked, isHierarchicalChecked } = options;
 
         // i reparse everything to detect failures
         const pluginData = {
@@ -101,22 +103,22 @@ export class Session {
             exportMasks: isMasksChecked,
             exportTextures: isTexturesChecked,
             flatten: !isHierarchicalChecked,
-            namePrefix: isMeaningfulNamesChecked ? 'layer' : undefined
-        }
+            namePrefix: isMeaningfulNamesChecked ? "layer" : undefined,
+        };
 
-        var that = this
+        var that = this;
 
         return new Promise((resolve, reject) => {
 
-            scriptLoader.evalScript('invoke_document_worker', pluginData)
+            scriptLoader.evalScript("invoke_document_worker", pluginData)
                 .then((res) => {
-                    resolve(JSON.parse(res))
+                    resolve(JSON.parse(res));
                 })
                 .catch(err => {
-                    reject(err)
-                })
+                    reject(err);
+                });
 
-        })
+        });
 
     }
 
@@ -126,15 +128,15 @@ export class Session {
      * @param  {string} val what to log
      */
     log(val) {
-        console.log(`${this.name} ${val}`)
+        console.log(`${this.name} ${val}`);
     }
 
     get name() {
-        return 'Session:: '
+        return "Session:: "
     }
 
 }
 
-var session = new Session()
+var session = new Session();
 
-export default session
+export default session;
