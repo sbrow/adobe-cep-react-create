@@ -34,49 +34,42 @@ function listProjectItems(obj) {
 }
 
 function insertClips(clips) {
-	const project = app.project;
-	const lib = project.rootItem.children;
-	const inserted = 0;
-	try {
-		if (typeof clips === "string") {
-			clips = JSON.parse(clips);
-		}
+    const project = app.project;
+    const lib = project.rootItem.children;
+    const inserted = 0;
+    try {
+        if (typeof clips === "string") {
+            clips = JSON.parse(clips);
+        }
 
-		alert(JSON.stringify(
-			{
-				clips: clips,
-				type: (typeof clips),
-				arr: (clips instanceof Array),
-				length: clips.length
-			}))
-		var inTime = 0;
-		for (var i = 0; i < clips.length; i++) {
-			var clip = clips[i];
-			for (var j = 0; j < lib.numItems; j++) {
-				var child = lib[i];
-				if (child.name === clip) {
-					inTime = insertClip(child, inTime);
-					inserted++;
-					break;
-				}
-			}
-		}
-	} catch (err) {
-		alert("error in insertClips: " + err)
-	}
-	return inserted;
+        var inTime = 0;
+        for (var i = 0; i < clips.length; i++) {
+            var clip = clips[i];
+            for (var j = 0; j < lib.numItems; j++) {
+                var child = lib[j];
+                if (child.name === clip) {
+                    inTime = insert(child, inTime);
+                    inserted++;
+                    break;
+                }
+            }
+        }
+    } catch (err) {
+        alert("error in insertClips: " + err)
+    }
+    return inserted;
 }
 
 function insert(clip, inTime) {
-	const project = app.project;
-	if (project.activeSequence === undefined) {
-		alert("There is no active sequence.");
-		return;
-	}
-	const sequence = project.activeSequence;
-	const video = sequence.videoTracks[0];
-	const outTime = inTime + Number(clip.getOutPoint().seconds);
+    const project = app.project;
+    if (project.activeSequence === undefined) {
+        alert("There is no active sequence.");
+        return;
+    }
+    const sequence = project.activeSequence;
+    const video = sequence.videoTracks[0];
+    const outTime = inTime + Number(clip.getOutPoint().seconds);
 
-	video.insertClip(clip, inTime);
-	return outTime;
+    video.insertClip(clip, inTime);
+    return outTime;
 }
