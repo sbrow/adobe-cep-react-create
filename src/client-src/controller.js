@@ -1,3 +1,5 @@
+import * as fs from "fs";
+
 /**
  * @author Tomer Riko Shalev
  */
@@ -10,8 +12,6 @@
 class Controller {
 
     constructor() {
-        //super()
-
         this.init();
     }
 
@@ -38,7 +38,7 @@ class Controller {
         console.log(options);
 
         if (!this.hasSession()) {
-            return
+            return;
         }
 
         session.invokePlugin(options)
@@ -53,10 +53,18 @@ class Controller {
      */
     get logz() {
         if (!this.hasSession()) {
-            return []
+            return [];
         }
 
         return session.managers.log.rawLogs;
+    }
+
+    dump() {
+        if (!this.hasSession()) {
+            return;
+        }
+
+        session.managers.log.dump("/Users/sbrow/Documents/GitHub/cep-react/logs/log.log");
     }
 
     /**
@@ -78,7 +86,7 @@ class Controller {
     }
 
     get name() {
-        return "Client Controller:: "
+        return "Client Controller:: ";
     }
 
 }
