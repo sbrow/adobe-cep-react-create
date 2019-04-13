@@ -6,10 +6,9 @@
   "license": "ISC",
   "main": "./client-src/src/index.jsx",
   "scripts": {
-    "build": "node ./scripts/build.js",
+    "build": "npm run build:dev",
     "start": "npm run client:dev-server",
     "client:dev-server": "webpack-dev-server --config ./build-scripts/webpack.client.config.js --env.target=web --mode development --open",
-    "build": "npm run build:dev",
     "build:dev": "node ./build-scripts/build.js development",
     "build:prod": "node ./build-scripts/build.js production",
     "deploy": "npm run deploy:dev",

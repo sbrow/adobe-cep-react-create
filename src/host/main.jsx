@@ -16,21 +16,42 @@ governing permissions and limitations under the License.
 // alert(JSON.stringify(a))
 
 function test_host(obj_string) {
-	// alert(obj_string)
-	res = JSON.parse(obj_string);
-	// alert(res)
-	return "hola from extendscript " + res.name;
+    // alert(obj_string)
+    res = JSON.parse(obj_string);
+    // alert(res)
+    return "hola from extendscript " + res.name;
 }
 
-function listProjectItems(obj) {
-	var ret = [];
+function getBins() {
+    const items = JSON.parse(listProjectItems());
+    var bins = [];
 
-	const children = app.project.rootItem.children;
-	for (var i = 0; i < children.numItems; i++) {
-		var child = children[i];
-		ret.push(child.name + ":" + child.type)
-	}
-	return ret;
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (item.type === 2) {
+            bins.push(item.name);
+        }
+    }
+    return JSON.stringify(bins);
+}
+
+
+function listProjectItems() {
+    try {
+        var ret = [];
+
+        const children = app.project.rootItem.children;
+        for (var i = 0; i < children.numItems; i++) {
+            var child = children[i];
+            ret.push({
+                name: child.name,
+                type: child.type
+            })
+        }
+        return JSON.stringify(ret);
+    } catch (err) {
+        alert("list returned " + err)
+    }
 }
 
 function insertClips(clips) {

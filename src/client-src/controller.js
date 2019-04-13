@@ -1,4 +1,3 @@
-import * as fs from "fs";
 
 /**
  * @author Tomer Riko Shalev
@@ -56,7 +55,7 @@ class Controller {
             return [];
         }
 
-        return session.managers.log.rawLogs;
+        // return session.managers.log.rawLogs;
     }
 
     dump() {
@@ -64,7 +63,7 @@ class Controller {
             return;
         }
 
-        session.managers.log.dump("/Users/sbrow/Documents/GitHub/cep-react/logs/log.log");
+        // session.managers.log.dump("/Users/sbrow/Documents/GitHub/cep-react/logs/log.log");
     }
 
     /**

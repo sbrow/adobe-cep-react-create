@@ -13,6 +13,8 @@ import "./assets/css/style.css";
 import "./assets/fonts/material-icons/index.css";
 import "./assets/fonts/typeface-roboto/index.css";
 
+import controller from "./controller";
+
 // console.log = window.console.log;
 
 ReactDOM.render(<App title="Video Builder" />, document.getElementById("root"));

@@ -2,9 +2,18 @@
  * @author Tomer Riko Shalev
  */
 
-import { EventEmitter } from "events"
-import scriptLoader from "./ScriptLoader"
-import DataManagers from "./managers/DataManagers"
+import { EventEmitter } from "events";
+import scriptLoader from "./ScriptLoader";
+
+// import DataManagers from "./managers/DataManagers";
+import { createLogger, format, transports } from "winston";
+
+const logger = createLogger({
+    level: "info",
+    format: format.simple(),
+    transports: [new transports.File({ filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/main.log" })],
+});
+
 /**
  * the main plugin session. This can enter the node modules as
  * well as the host
@@ -12,7 +21,7 @@ import DataManagers from "./managers/DataManagers"
  */
 export class Session {
 
-    _managers = new DataManagers();
+    // _managers = new DataManagers();
 
     constructor() {
         //super()
@@ -25,21 +34,16 @@ export class Session {
      *
      */
     init() {
+        // console.log = logger.log;
         // init before everything so I can intercept console.log
-        this._managers.init();
+        // this._managers.init();
         this.log("session is initing...");
         // load jsx file dynamically
         this.log("loading the main jsx file");
         scriptLoader.loadJSX("main.jsx");
-        // this.log("loading the test jsx file");
-        // scriptLoader.loadJSX("test.jsx");
-
-        // some testing
-        this.test();
-        // var fs = require('fs-extra')
-        //console.log(fs)
 
         this.log("session is inited");
+        // this._managers._manager_log.dump();
     }
 
     /**
@@ -47,9 +51,9 @@ export class Session {
      *
      * @return {type}  description
      */
-    get managers() {
-        return this._managers;
-    }
+    // get managers() {
+    // return this._managers;
+    // }
 
     /**
      * scriptLoader - get the script loader
@@ -65,7 +69,7 @@ export class Session {
      */
     test() {
         var obj = {
-            name: "tomer"
+            name: "tomer",
         };
 
         scriptLoader.evalScript("test_host", obj).then((res) => {
@@ -80,7 +84,7 @@ export class Session {
     }
 
     run(fn, arg) {
-        return scriptLoader.evalScript(fn, arg);
+        return scriptLoader.evalScript(fn, arg).then(res => res);
     }
     /**
      * invoke the plugin
@@ -128,11 +132,12 @@ export class Session {
      * @param  {string} val what to log
      */
     log(val) {
-        console.log(`${this.name} ${val}`);
+        // console.log(`${this.name} ${val}`);
+        logger.info(`${val}`);
     }
 
     get name() {
-        return "Session:: "
+        return "Session:: ";
     }
 
 }
@@ -140,3 +145,4 @@ export class Session {
 var session = new Session();
 
 export default session;
+
