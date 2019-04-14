@@ -89,7 +89,7 @@ debugging is achieved through the chrome debugger
 this bootstrap is composed of three parts
 
 #### Front end side
-inside `src/client-src` you have the entry point for creating ReactJS application.
+inside `src/client` you have the entry point for creating ReactJS application.
 installing modules is against the project root, see `/project.json`.  
 a nice feature, that it has is that you can use `webpack-dev-server` to see
 your UI results with watching at the browser, simply use:
@@ -99,7 +99,7 @@ this will generate the template html for you and run it in your browser,
 and will rebuild on code changes which is nice to have.
 
 #### back end side / session (using node modules)
-inside `src/session-src` you have the entry point for using native node.js modules.
+inside `src/session` you have the entry point for using native node.js modules.
 Adobe-CEP supports instantiating Node.js runtime as well as Chromium but I believe
 most developers would like to use the power of Node.js for doing IO.
 
@@ -147,7 +147,7 @@ the adobe extensions folder in debug mode currently, I still need to sign the ex
 **A:** simply `npm install redux` from the root `./` directory  
 
 **Q:** how do I add more session native node modules (like fs-extra) ?  
-**A:** simply `npm install fs-extra` from the `./src/session-src` directory, when building occurs, these
+**A:** simply `npm install fs-extra` from the `./src/session` directory, when building occurs, these
 modules will be copied to the `./dist` folder.  
 
 **Q:** how do I add some js lib without npm ?  

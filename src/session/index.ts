@@ -4,4 +4,5 @@
 
 import session from './src/Session'
 
-window.session = session
+window['session'] = session
+
