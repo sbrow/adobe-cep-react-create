@@ -2,17 +2,9 @@
  * @author Tomer Riko Shalev
  */
 
-import { EventEmitter } from "events";
 import scriptLoader from "./ScriptLoader";
 
-// import DataManagers from "./managers/DataManagers";
-import { createLogger, format, transports } from "winston";
-
-const logger = createLogger({
-    level: "info",
-    format: format.simple(),
-    transports: [new transports.File({ filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/main.log" })],
-});
+import { Logger, LoggerOptions, createLogger, format, transports } from "winston";
 
 /**
  * the main plugin session. This can enter the node modules as
@@ -20,46 +12,40 @@ const logger = createLogger({
  *
  */
 export class Session {
+    public logger: Logger;
+    public readonly name: string;
 
-    // _managers = new DataManagers();
-
-    constructor() {
-        //super()
-
-        this.init();
+    constructor(logOpts: LoggerOptions, name = "Session") {
+        this.logger = createLogger(logOpts);
+        this.name = name;
+        this.init("main.jsx");
     }
 
     /**
      * init - session
      *
      */
-    init() {
-        // console.log = logger.log;
-        // init before everything so I can intercept console.log
-        // this._managers.init();
-        this.log("session is initing...");
-        // load jsx file dynamically
-        this.log("loading the main jsx file");
-        scriptLoader.loadJSX("main.jsx");
-
-        this.log("session is inited");
-        // this._managers._manager_log.dump();
+    public init(scripts: string | string[] = []) {
+        if (typeof scripts === "string") {
+            scripts = [scripts];
+        }
+        this.log(`Session "${this.name}" is initializing...`);
+        this.log("Loading scripts")
+        let loaded = 0;
+        scripts.forEach((script) => {
+            this.log(`loading "${script}"`);
+            scriptLoader.loadJSX(script)
+            loaded++;
+        });
+        this.log(`Successfully loaded ${loaded} scripts.`)
+        this.log(`"${this.name}" has initialized.`);
     }
-
-    /**
-     * get data managers
-     *
-     * @return {type}  description
-     */
-    // get managers() {
-    // return this._managers;
-    // }
 
     /**
      * scriptLoader - get the script loader
      *
      */
-    scriptLoader() {
+    public scriptLoader() {
         return scriptLoader;
     }
 
@@ -67,8 +53,8 @@ export class Session {
      * test - let's test things
      *
      */
-    test() {
-        var obj = {
+    public test() {
+        const obj = {
             name: "tomer",
         };
 
@@ -77,15 +63,16 @@ export class Session {
         });
     }
 
-    testAlert() {
+    public testAlert() {
         scriptLoader.evalScript("testAlert", null).then((res) => {
             this.log("succeeded.");
         });
     }
 
-    run(fn, arg) {
-        return scriptLoader.evalScript(fn, arg).then(res => res);
+    public async run(fn: () => any, arg: any): Promise<any> {
+        return scriptLoader.evalScript(fn, arg).then((res) => res);
     }
+
     /**
      * invoke the plugin
      *
@@ -93,11 +80,13 @@ export class Session {
      *
      * @return {object} describes how well the execution of plugin was
      */
-    invokePlugin(options) {
-        const { folderPath, isFlattenChecked,
+    public invokePlugin(options: any): object {
+        const {
+            folderPath, isFlattenChecked,
             isInfoChecked, isInspectVisibleChecked,
             isMasksChecked, isTexturesChecked,
-            isMeaningfulNamesChecked, isHierarchicalChecked } = options;
+            isMeaningfulNamesChecked, isHierarchicalChecked
+        } = options;
 
         // i reparse everything to detect failures
         const pluginData = {
@@ -110,7 +99,7 @@ export class Session {
             namePrefix: isMeaningfulNamesChecked ? "layer" : undefined,
         };
 
-        var that = this;
+        const that = this;
 
         return new Promise((resolve, reject) => {
 
@@ -118,7 +107,7 @@ export class Session {
                 .then((res) => {
                     resolve(JSON.parse(res));
                 })
-                .catch(err => {
+                .catch((err) => {
                     reject(err);
                 });
 
@@ -131,18 +120,15 @@ export class Session {
      *
      * @param  {string} val what to log
      */
-    log(val) {
-        // console.log(`${this.name} ${val}`);
-        logger.info(`${val}`);
+    public log(val: string) {
+        this.logger.info(`${val}`, { source: this.name });
     }
-
-    get name() {
-        return "Session:: ";
-    }
-
 }
 
-var session = new Session();
+export const session = new Session({
+    level: "info",
+    format: format.json(),
+    transports: [new transports.File({ filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/main.log" })],
+});
 
 export default session;
-

@@ -35,7 +35,8 @@ export class AppStore {
             } else {
                 if ("session" in window) {
                     // @ts-ignore
-                    window.session.log(`"${key}" not in "${JSON.stringify(this)}"`, "error");
+                    const e = new Error(`"${key}" not in "${JSON.stringify(this)}"`);
+                    window.session.logger.log("error", e.message, { stack: e.stack.split("\n") });
                 }
                 return undefined;
             }
@@ -201,7 +202,7 @@ function getBins(): string[] {
     try {
         // @ts-ignore
         window.session.run("getBins", null).then((res: string) => {
-            window.alert(res)
+            window.alert(res);
             return JSON.parse(res);
         }).catch((error) => {
             window.alert(`run failed with: ${error}`);
