@@ -2,6 +2,9 @@
   "name": "cep-test",
   "version": "0.1.0",
   "author": "Spencer Brower",
+  "contributors": [
+    "Tomer Riko Shalev"
+  ],
   "description": "demo for CEP",
   "license": "ISC",
   "main": "./client/src/index.jsx",
