@@ -9,21 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+// @include "./JSON.jsx"
 
-// tslint:disable-next-line: semicolon
-#include "./JSON.jsx";
 
-// alert(JSON.stringify(a))
-
-function test_host(obj_string) {
-    // alert(obj_string)
-    res = JSON.parse(obj_string);
-    // alert(res)
-    return "hola from extendscript " + res.name;
+function test_host(jsonString: JSONString) {
+    let res = JSON.parse(jsonString);
+    return `hola from extendscript "${res.name}"`;
 }
 
 function getBins() {
-    const items = JSON.parse(listProjectItems());
+    const items = JSON.parse(listProjectItems() || "[]");
     var bins = [];
 
     for (var i = 0; i < items.length; i++) {
@@ -36,11 +31,14 @@ function getBins() {
 }
 
 
-function listProjectItems() {
+function listProjectItems(): string | null {
     try {
-        var ret = [];
+        var ret: { name: string, type: number }[] = [];
 
         const children = app.project.rootItem.children;
+        if (children === undefined) {
+            return "[]";
+        }
         for (var i = 0; i < children.numItems; i++) {
             var child = children[i];
             ret.push({
@@ -52,26 +50,34 @@ function listProjectItems() {
     } catch (err) {
         alert("list returned " + err)
     }
+    return null
 }
 
-function insertClips(clips) {
+/**
+ * 
+ * @returns the number of clips inserted. 
+ */
+function insertClips(clips: string | string[]): number {
     const project = app.project;
     const lib = project.rootItem.children;
-    const inserted = 0;
+    let inserted = 0;
     try {
         if (typeof clips === "string") {
             clips = JSON.parse(clips);
         }
 
-        var inTime = 0;
-        for (var i = 0; i < clips.length; i++) {
-            var clip = clips[i];
-            for (var j = 0; j < lib.numItems; j++) {
-                var child = lib[j];
-                if (child.name === clip) {
-                    inTime = insert(child, inTime);
-                    inserted++;
-                    break;
+        var inTime: number | null = 0;
+        if (lib !== undefined && clips instanceof Array) {
+            for (const clip of clips) {
+                for (var j = 0; j < lib.numItems; j++) {
+                    let child = lib[j];
+                    if (child.name === clip) {
+                        if (inTime !== null) {
+                            inTime = insert(child, inTime);
+                            inserted++;
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -81,16 +87,21 @@ function insertClips(clips) {
     return inserted;
 }
 
-function insert(clip, inTime) {
+function insert(clip: Clip, inTime: number): number | null {
+    if (clip.type !== ProjectItemType.CLIP) {
+        alert("Attempted to insert a ProjectItem that is not a clip.")
+        return null;
+    }
     const project = app.project;
     if (project.activeSequence === undefined) {
         alert("There is no active sequence.");
-        return;
+        return null;
     }
     const sequence = project.activeSequence;
     const video = sequence.videoTracks[0];
-    const outTime = inTime + Number(clip.getOutPoint().seconds);
 
     video.insertClip(clip, inTime);
-    return outTime;
+
+    let time = inTime + clip.getOutPoint().seconds;
+    return Number(time);
 }

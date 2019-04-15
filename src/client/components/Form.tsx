@@ -10,18 +10,42 @@ import { PathBox } from "./PathBox";
 const session: Session = window.session;
 
 // function parse
-
-function Button(): JSX.Element {
+function Submit(): JSX.Element {
     const [state, dispatch] = useContext(StoreContext);
     const onClick = () => {
         try {
-            // @ts-ignore
-            window.session.run("getBins", null).then((res: string) => {
-                dispatch({ type: "set", payload: { key: "library", value: JSON.parse(res) } });
-            }).catch((error) => {
-                window.alert(`run failed with: ${error}`);
+            if (controller.hasSession()) {
+                // @ts-ignore
+                const functionName = "insertClips"
+                window.session.run(functionName, [state.intro]).then((res: string) => {
+                    // dispatch({ type: "set", payload: { key: "library", value: JSON.parse(res) } });
+                    window.session.logger.info(`${functionName} returned: ${res}`, { source: "Submit" });
+                }).catch((error) => {
+                    window.session.logger.error(`run failed with: ${error}`);
 
-            });
+                });
+            }
+        } catch (error) {
+            window.session.logger.error(`run failed with: ${error}`);
+        }
+    };
+
+    return (<button type="button" onClick={onClick}>Submit</button>);
+}
+
+function Refresh(): JSX.Element {
+    const [state, dispatch] = useContext(StoreContext);
+    const onClick = () => {
+        try {
+            if (controller.hasSession()) {
+                // @ts-ignore
+                window.session.run("getBins", null).then((res: string) => {
+                    dispatch({ type: "set", payload: { key: "library", value: JSON.parse(res) } });
+                }).catch((error) => {
+                    window.alert(`run failed with: ${error}`);
+
+                });
+            }
         } catch (error) {
             window.alert(`Couldn't call run: ${error}`);
             window.alert(controller.logz.join("\r\n"));
@@ -63,7 +87,7 @@ export function Form(): JSX.Element {
                 <Blocks />
                 <h2>Conclusion</h2>
                 <PathBox id="outro" label="Outro" />
-                <Button />
+                <Refresh /><Submit />
             </form>
             <Display />
             <Library />

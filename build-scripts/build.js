@@ -50,8 +50,9 @@ function build() {
         utils.log_progress('bundeling session...')
         execSync(`webpack --config ${webpack_session_config_path} --display normal --display-chunks --env.target=node --mode ${env}`, { stdio: [0, 1, 2] })
         // copy the host code
-        utils.log_progress('copying host code...')
-        utils.copyRecursiveSync(fromSrc('host'), fromPlugin('host'))
+        utils.log_progress('transpiling host code...')
+        execSync("tsc -p ./src/host/tsconfig.json", { stdio: [0, 1, 2] })
+        // utils.copyRecursiveSync(fromSrc('host/out'), fromPlugin('host'))
         // copy the session's node modules folder
         utils.log_progress('copying session node-modules...')
         utils.copyRecursiveSync(fromSrc('session/node_modules'), fromPlugin('node_modules'))

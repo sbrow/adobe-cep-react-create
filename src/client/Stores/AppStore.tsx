@@ -201,13 +201,14 @@ function reducer(state: AppStore, action: SetAction): AppStore {
 function getBins(): string[] {
     try {
         // @ts-ignore
-        window.session.run("getBins", null).then((res: string) => {
-            window.alert(res);
-            return JSON.parse(res);
-        }).catch((error) => {
-            window.alert(`run failed with: ${error}`);
-            return [];
-        });
+        if (controller.hasSession()) {
+            window.session.run("getBins", null).then((res: string) => {
+                return JSON.parse(res);
+            }).catch((error) => {
+                window.alert(`run failed with: ${error}`);
+                return [];
+            });
+        }
     } catch (error) {
         window.alert(`Couldn't call run: ${error}`);
         window.alert(controller.logz.join("\r\n"));

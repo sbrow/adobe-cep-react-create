@@ -485,6 +485,14 @@ declare class ProjectItem extends PremiereObject
     startTime(): Time;
 }
 
+declare interface Clip extends ProjectItem {
+    /**
+     * @returns {Time} The time at which the clip ends.
+     * @memberof Clip
+     */
+    getOutPoint(): Time
+}
+
 declare class ProjectItemCollection extends PremiereObject
 {
     readonly numItems: number;
