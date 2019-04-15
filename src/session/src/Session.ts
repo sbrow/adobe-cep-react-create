@@ -2,9 +2,9 @@
  * @author Tomer Riko Shalev
  */
 
-import scriptLoader from "./ScriptLoader";
+import ScriptLoader from "./ScriptLoader";
 
-import { Logger, LoggerOptions, createLogger, format, transports } from "winston";
+import { createLogger, format, Logger, LoggerOptions, transports } from "winston";
 
 /**
  * the main plugin session. This can enter the node modules as
@@ -14,9 +14,11 @@ import { Logger, LoggerOptions, createLogger, format, transports } from "winston
 export class Session {
     public logger: Logger;
     public readonly name: string;
+    public scriptLoader: ScriptLoader;
 
     constructor(logOpts: LoggerOptions, name = "Session") {
         this.logger = createLogger(logOpts);
+        this.scriptLoader = new ScriptLoader(this.logger);
         this.name = name;
         this.init("main.jsx");
     }
@@ -30,24 +32,24 @@ export class Session {
             scripts = [scripts];
         }
         this.log(`Session "${this.name}" is initializing...`);
-        this.log("Loading scripts")
+        this.log("Loading scripts");
         let loaded = 0;
         scripts.forEach((script) => {
             this.log(`loading "${script}"`);
-            scriptLoader.loadJSX(script)
+            this.scriptLoader.loadJSX(script);
             loaded++;
         });
-        this.log(`Successfully loaded ${loaded} scripts.`)
+        this.log(`Successfully loaded ${loaded} scripts.`);
         this.log(`"${this.name}" has initialized.`);
     }
 
-    /**
-     * scriptLoader - get the script loader
-     *
-     */
-    public scriptLoader() {
-        return scriptLoader;
-    }
+    // /**
+    //  * scriptLoader - get the script loader
+    //  *
+    //  */
+    // public scriptLoader() {
+    //     return scriptLoader;
+    // }
 
     /**
      * test - let's test things
@@ -58,19 +60,19 @@ export class Session {
             name: "tomer",
         };
 
-        scriptLoader.evalScript("test_host", obj).then((res) => {
+        this.scriptLoader.evalScript("test_host", obj).then((res) => {
             this.log("result is " + res);
         });
     }
 
     public testAlert() {
-        scriptLoader.evalScript("testAlert", null).then((res) => {
+        this.scriptLoader.evalScript("testAlert", null).then((res) => {
             this.log("succeeded.");
         });
     }
 
-    public async run(fn: () => any, arg: any): Promise<any> {
-        return scriptLoader.evalScript(fn, arg).then((res) => res);
+    public async run(functionName: string, arg: any): Promise<any> {
+        return this.scriptLoader.evalScript(functionName, arg).then((res) => res);
     }
 
     /**
@@ -85,7 +87,7 @@ export class Session {
             folderPath, isFlattenChecked,
             isInfoChecked, isInspectVisibleChecked,
             isMasksChecked, isTexturesChecked,
-            isMeaningfulNamesChecked, isHierarchicalChecked
+            isMeaningfulNamesChecked, isHierarchicalChecked,
         } = options;
 
         // i reparse everything to detect failures
@@ -103,8 +105,8 @@ export class Session {
 
         return new Promise((resolve, reject) => {
 
-            scriptLoader.evalScript("invoke_document_worker", pluginData)
-                .then((res) => {
+            this.scriptLoader.evalScript("invoke_document_worker", pluginData)
+                .then((res: string) => {
                     resolve(JSON.parse(res));
                 })
                 .catch((err) => {
