@@ -5,13 +5,16 @@ function newSequence() {
 
     project.createNewSequence("name", "12");
 }
+
 function itemChildren() {
     const item = projectItem(0);
-    alert(JSON.stringify(item.videoComponents));
+    if (item !== null) {
+        alert(JSON.stringify(item.videoComponents));
+    }
 }
+
 function activeSequence() {
     const project = app.project;
-
     alert(JSON.stringify(project.activeSequence));
 }
 
@@ -19,19 +22,25 @@ function testAlert() {
     alert("Testing...");
 }
 
-function projectItem(index) {
+function projectItem(index: number): ProjectItem | null {
     if (index === undefined) {
         index = 0;
     }
     const project = app.project;
+    const rootItem = project.rootItem;
 
-    const item = project.rootItem.children[index];
-    return item;
+    if (rootItem.children !== undefined) {
+        return rootItem.children[index];
+    }
+    return null;
 }
 
 function getOutPoint() {
     const item = projectItem(0);
-    alert(item.getOutPoint());
+    if (item !== null && item.type === ProjectItemType.CLIP) {
+        const clip = item as Clip;
+        alert(clip.getOutPoint());
+    }
 }
 
 /**
@@ -39,8 +48,13 @@ function getOutPoint() {
  */
 function stripAudio() {
     const item = projectItem(0);
-    alert(item.type);
-    item.createSubClip("clip", item.startTime(), item.getOutPoint(), 0, 0, 1);
+    if (item !== null) {
+        alert(item.type);
+        if (item.type === ProjectItemType.CLIP) {
+            const clip = item as Clip;
+            clip.createSubClip("clip", clip.startTime(), clip.getOutPoint(), 0, 0, 1);
+        }
+    }
 }
 
 // function insertClip() {

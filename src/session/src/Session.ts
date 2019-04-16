@@ -130,7 +130,16 @@ export class Session {
 export const session = new Session({
     level: "info",
     format: format.json(),
-    transports: [new transports.File({ filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/main.log" })],
+    transports: [
+        new transports.File({
+            level: "debug",
+            filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/main.log"
+        }),
+        new transports.File({
+            format: format.cli(),
+            filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/simple.log",
+        }),
+    ],
 });
 
 export default session;

@@ -20,7 +20,7 @@ function Submit(): JSX.Element {
                 window.session.run(functionName, [state.intro]).then((res: string) => {
                     // dispatch({ type: "set", payload: { key: "library", value: JSON.parse(res) } });
                     window.session.logger.info(`${functionName} returned: ${res}`, { source: "Submit" });
-                }).catch((error) => {
+                }).catch((error: Error) => {
                     window.session.logger.error(`run failed with: ${error}`);
 
                 });
@@ -38,12 +38,13 @@ function Refresh(): JSX.Element {
     const onClick = () => {
         try {
             if (controller.hasSession()) {
-                // @ts-ignore
-                window.session.run("getBins", null).then((res: string) => {
-                    dispatch({ type: "set", payload: { key: "library", value: JSON.parse(res) } });
-                }).catch((error) => {
-                    window.alert(`run failed with: ${error}`);
-
+                const functionName = "getBins";
+                const args = null;
+                window.session.run(functionName, args).then((result: string) => {
+                    const value = JSON.parse(result) || [];
+                    dispatch({ type: "set", source: "Refresh", payload: { key: "library", value } });
+                }).catch((error: Error) => {
+                    window.session.logger.error(`run "${functionName}" failed with: "${error.message}"`, { args, stack: error.stack });
                 });
             }
         } catch (error) {
@@ -62,7 +63,9 @@ function Display() {
 
 function Library() {
     const [state, dispatch] = useContext(StoreContext);
-
+    if (state.library.length === 0) {
+        return <ul></ul>
+    }
     return (
         <ul>
             {state.library.map((item: any) => {

@@ -31,15 +31,18 @@ interface DropdownProps {
 export function Dropdown(props: DropdownProps): JSX.Element {
     const [state, dispatch] = React.useContext(StoreContext);
     const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        dispatch({ type: "set", payload: { key: props.id, value: event.target.value } });
+        dispatch({ type: "set", source: "Dropdown", payload: { key: props.id, value: event.target.value } });
     };
 
-    const options = (props.options instanceof Array) ? props.options : state[props.options];
+    let options = (props.options instanceof Array) ? props.options : state[props.options];
+    if (!(options instanceof Array)) {
+        options = []
+    }
     return (
         <div id={props.id} class="row">
             <label htmlFor={`${props.id}-data`}>{props.label}</label>
             <select id={`${props.id}-data`} value={state.get(props.id)} onChange={onChange} {...props.id}>
-                {options.map((listValue) => {
+                {options.map((listValue: string) => {
                     return (
                         <Option value={listValue} />
                     );

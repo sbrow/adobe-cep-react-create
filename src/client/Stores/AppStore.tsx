@@ -19,7 +19,7 @@ export class AppStore {
         this.warmup = init.warmup;
         this.blocks = init.blocks;
         this.outro = init.outro;
-        this.library = init.library;
+        this.library = init.library || [];
     }
 
     /**
@@ -71,14 +71,17 @@ export class AppStore {
 
     public updateLibrary() {
         const fresh = getBins();
-        if (fresh !== this.library) {
-            reducer(this, {
+        if (fresh !== undefined && fresh !== this.library) {
+            window.session.logger.info(`${JSON.stringify(this.library)} !== ${JSON.stringify(fresh)}, updating...`)
+            const action = {
                 type: "set",
+                source: "UpdateLibrary",
                 payload: {
                     key: "library",
                     value: fresh,
                 },
-            });
+            }
+            reducer(this, action);
         }
     }
 
@@ -147,6 +150,8 @@ export class AppStore {
 }
 
 function setDeepValue(obj: object, path: string, val: any) {
+    const args = { obj, path, val }
+    window.session.logger.debug(`${JSON.stringify(args)}`);
     const props = path.split(".");
     const n = props.length - 1;
     for (let i = 0; i < n; ++i) {
@@ -156,6 +161,7 @@ function setDeepValue(obj: object, path: string, val: any) {
         obj = obj[key] = obj[key] || _default;
     }
     obj[props[n]] = val;
+    window.session.logger.debug(`${JSON.stringify(obj)}`);
     return obj;
 }
 
@@ -181,19 +187,25 @@ function idToPath(id: string) {
  * @returns {*}
  */
 function reducer(state: AppStore, action: SetAction): AppStore {
+    //@ts-ignore
+    window.session.logger.info(`recieved action: ${JSON.stringify(action)}`);
     if (action.type !== "set") {
         throw new Error(`; Type; "${action.type}"; not; recognized`);
     }
 
     const newState = new AppStore({ ...state });
-    const n = Number(action.payload.value);
+    if (!(action.payload.value instanceof Array)) {
+        const n = Number(action.payload.value);
 
-    if (!isNaN(n) && action.payload.value !== "") {
-        action.payload.value = n;
+        if (!isNaN(n) && action.payload.value !== "") {
+            action.payload.value = n;
+        }
     }
     newState.set(idToPath(action.payload.key), action.payload.value);
     newState.updateBlocks();
-    newState.updateLibrary();
+    if (action.payload.key !== "library") {
+        newState.updateLibrary();
+    }
 
     return newState;
 }
