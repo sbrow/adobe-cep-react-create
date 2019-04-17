@@ -1,5 +1,5 @@
 {
-  "name": "cep-test",
+  "name": "workout-builder",
   "version": "0.2.5",
   "author": "Spencer Brower",
   "contributors": [
@@ -14,16 +14,20 @@
     "client:dev-server": "webpack-dev-server --config ./build-scripts/webpack.client.config.js --env.target=web --mode development --open",
     "build:dev": "node ./build-scripts/build.js development",
     "build:prod": "node ./build-scripts/build.js production",
+    "build:jsx": "tsc -p ./src/host/tsconfig.json",
     "deploy": "npm run deploy:dev",
     "deploy:dev": "node ./build-scripts/deploy.js development",
     "deploy:prod": "node ./build-scripts/deploy.js production",
     "archive": "node ./build-scripts/archive.js",
     "release:dev": "npm run build:dev && npm run deploy:dev",
     "release:prod": "npm run build:prod && npm run deploy:prod && npm run archive",
-    "postinstall": "mkdir -p src/session/node_modules",
     "babel": "babel ./client/js --out-dir ./client/out",
     "test": "ts-mocha -r jsdom-global/register -p ./src/client/tsconfig.json ./src/client/test/test.spec.ts",
-    "make": "echo ./src/client ./src/host ./src/session | xargs -n 1 cp ./tslint.json"
+    "make": "ts-node ./build-scripts/make.ts",
+    "clean": "npm run clean:logs",
+    "clean:logs": "rm -f ./logs/*",
+    "postinstall": "mkdir -p src/session/node_modules",
+    "prebuild": "npm run clean"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.3",
@@ -49,6 +53,7 @@
     "html-webpack-plugin": "^3.2.0",
     "jsdom": "^14.0.0",
     "jsdom-global": "^3.0.2",
+    "json": "^9.0.6",
     "mini-css-extract-plugin": "^0.4.1",
     "mocha": "^6.1.3",
     "rewire": "^4.0.1",

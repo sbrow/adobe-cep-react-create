@@ -3,13 +3,14 @@ const root = __dirname;
 const srcFolder = path.join(root, "src");
 const destFolder = path.join(root, "dist");
 const certPath = path.join(destFolder, "cert.p12");
+const package = require("./package.json");
 
 module.exports = {
-    extensionBundleId: "com.hendrix.demo",
-    extensionBundleName: "demo",
-    extensionBundleVersion: "1.0.1",
+    extensionBundleId: `com.${package.name}`,
+    extensionBundleName: package.name,
+    extensionBundleVersion: package.version,
     cepVersion: "7.0",
-    panelName: "hendrix demo",
+    panelName: package.name,
     width: "400",
     height: "600",
     root: root,
@@ -18,7 +19,7 @@ module.exports = {
     certificate: {
         customCert: {
             path: "",
-            password: "password"
+            password: "password",
         },
         selfSign: {
             country: "US",

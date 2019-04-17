@@ -31,6 +31,15 @@ class ScriptLoader {
         });
     }
 
+    public stringify(obj: any): string {
+        switch (typeof obj) {
+            case "string":
+                return obj;
+            case "object":
+            default:
+                return JSON.stringify(obj);
+        }
+    }
     /**
      * evalScript - evaluate a JSX script
      *
@@ -39,8 +48,8 @@ class ScriptLoader {
      * @return {Promise} a promise
      */
     public async evalScript(functionName: string, params: any): Promise<any> {
-        let params_string = params ? JSON.stringify(params) : "";
-        let eval_string = `${functionName}('${params_string}')`;
+        const paramsString = this.stringify(params);
+        const evalString = `${functionName}('${paramsString}')`;
         const that = this;
 
         return new Promise((resolve, reject) => {
@@ -51,7 +60,6 @@ class ScriptLoader {
                     if (eval_res.toLowerCase().indexOf("error") != -1) {
                         that.log("err eval");
                         reject(that.createScriptError(eval_res));
-
                         return;
                     }
                 }
@@ -63,7 +71,7 @@ class ScriptLoader {
                 return;
             };
 
-            that.cs.evalScript(eval_string, callback);
+            that.cs.evalScript(evalString, callback);
         });
 
     }

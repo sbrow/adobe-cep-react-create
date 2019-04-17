@@ -34,9 +34,9 @@ export function Dropdown(props: DropdownProps): JSX.Element {
         dispatch({ type: "set", source: "Dropdown", payload: { key: props.id, value: event.target.value } });
     };
 
-    let options = (props.options instanceof Array) ? props.options : state[props.options];
+    let options: any = (props.options instanceof Array) ? props.options : state[props.options];
     if (!(options instanceof Array)) {
-        options = []
+        options = [];
     }
     return (
         <div id={props.id} class="row">

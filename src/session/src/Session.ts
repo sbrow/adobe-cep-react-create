@@ -71,8 +71,11 @@ export class Session {
         });
     }
 
-    public async run(functionName: string, arg: any): Promise<any> {
-        return this.scriptLoader.evalScript(functionName, arg).then((res) => res);
+    public async run(functionName: string, arg?: any): Promise<any> {
+        return this.scriptLoader.evalScript(functionName, arg).then(
+            (result) => {
+                return JSON.parse(this.scriptLoader.stringify(result));
+            }).catch((error) => window.alert(`error ${JSON.stringify(error)}`));
     }
 
     /**
@@ -133,7 +136,7 @@ export const session = new Session({
     transports: [
         new transports.File({
             level: "debug",
-            filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/main.log"
+            filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/main.log",
         }),
         new transports.File({
             format: format.cli(),
