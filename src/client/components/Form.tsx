@@ -6,7 +6,6 @@ import { Blocks } from "./Blocks";
 import { Dropdown } from "./Dropdown";
 import { PathBox } from "./PathBox";
 
-// @ts-ignore
 const session: Session = window.session;
 
 // function parse
@@ -15,7 +14,6 @@ function Submit(): JSX.Element {
     const onClick = () => {
         try {
             if (controller.hasSession()) {
-                // @ts-ignore
                 const functionName = "insertClips"
                 window.session.run(functionName, [state.intro]).then((res: string) => {
                     // dispatch({ type: "set", payload: { key: "library", value: JSON.parse(res) } });

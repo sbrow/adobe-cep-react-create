@@ -4,7 +4,6 @@ import * as React from "react";
 import { Session } from "../../session/src/Session";
 import controller from "../controller";
 
-// @ts-ignore
 const session: Session = window.session;
 
 function run(fnName: string, args?: any): void {
@@ -20,10 +19,9 @@ function run(fnName: string, args?: any): void {
     }
 }
 
-function RunBtn(props: { fn: string | ((thing: any) => any), args?: any; }) {
+function RunBtn(props: { fn: string, args?: any; }) {
     let handleClick: (args: any) => void;
     if (typeof props.fn === "string") {
-        // @ts-ignore
         handleClick = (event) => { run(props.fn, props.args); };
     } else {
         handleClick = props.fn;
