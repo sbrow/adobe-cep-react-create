@@ -7,6 +7,7 @@ export interface IFormState {
     [key: string]: any;
     blocks: any[];
     library?: string[];
+    availableVideos?: string[];
 }
 export interface SetAction extends Action {
     type: "set";
@@ -30,3 +31,9 @@ export interface Workout {
     outro?: string;
 }
 
+export enum ProjectItemType {
+    Clip = 1,
+    Bin,
+    Root,
+    File,
+}
