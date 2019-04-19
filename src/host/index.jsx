@@ -1,12 +1,12 @@
 // @include "./test.jsx"
 
-if (typeof ($) === "undefined") {
-    $ = {};
-}
+// if (typeof ($) === "undefined") {
+//     $ = {};
+// }
 
 $._ext = {
     // Evaluate a file and catch the exception.
-    evalFile(path: string): void {
+    evalFile(path) {
         try {
             $.evalFile(path);
         } catch (e) {
@@ -14,7 +14,7 @@ $._ext = {
         }
     },
     // Evaluate all the files in the given folder
-    evalFiles(jsxFolderPath: string): void {
+    evalFiles(jsxFolderPath) {
         const folder = new Folder(jsxFolderPath);
         if (folder.exists) {
             const jsxFiles = folder.getFiles("*.jsx");
@@ -24,5 +24,5 @@ $._ext = {
             }
         }
     },
-    testAlert: testAlert,
+    testAlert,
 };

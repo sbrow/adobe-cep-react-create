@@ -6,7 +6,7 @@ export interface IFormState {
     numBlocks: number;
     [key: string]: any;
     blocks: any[];
-    library?: string[];
+    bins?: string[];
     availableVideos?: string[];
 }
 export interface SetAction extends Action {

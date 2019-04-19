@@ -1,7 +1,7 @@
 const path = require("path");
 // const CopyWebpackPlugin = require('copy-webpack-plugin')
 const nodeExternals = require("webpack-node-externals");
-const pluginConfig = require("../pluginrc.js");
+const pluginConfig = require("../../pluginrc.js");
 const distFolder = path.join(pluginConfig.destinationFolder, pluginConfig.extensionBundleId);
 const srcFolder = pluginConfig.sourceFolder;
 const SESSION_DIST_PATH = path.join(distFolder, "session-dist");
@@ -16,7 +16,7 @@ module.exports = (env) => ({
         rules: [
             {
                 test: /\.[jt]sx?$/,
-                exclude: /node_modules/,
+                exclude: [/node_modules/, /webpack.config.js/],
                 loader: "babel-loader",
                 options: {
                     presets: [
@@ -32,7 +32,7 @@ module.exports = (env) => ({
     output: {
         path: SESSION_DIST_PATH,
         publicPath: "",
-        filename: "bundle.js"
+        filename: "bundle.js",
     },
     devtool: "source-map",
     plugins: [

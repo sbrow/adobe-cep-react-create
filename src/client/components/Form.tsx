@@ -14,7 +14,7 @@ function Submit(): JSX.Element {
             if (controller.hasSession()) {
                 const functionName = "insertClips";
                 window.session.run(functionName, [state.intro]).then((res: string) => {
-                    // dispatch({ type: "set", payload: { key: "library", value: JSON.parse(res) } });
+                    // dispatch({ type: "set", payload: { key: "bins", value: JSON.parse(res) } });
                     controller.info(`${functionName} returned: ${res}`, { source: "Submit" });
                 }).catch((error: Error) => {
                     controller.error(`run failed with: ${JSON.stringify(error)}`, { source: "Submit" });
@@ -46,17 +46,16 @@ export function Form(): JSX.Element {
     const [state, dispatch] = useContext(StoreContext);
     const numBlocks = [1, 2, 3];
 
-    // useEffect(() => {
-    //     Update(state, dispatch);
-    // });
+    /*     useEffect(() => {
+            Update(state, dispatch);
+        }); */
 
     return (<React.Fragment>
         <form>
             <h2>Intro</h2>
-            {/* <Dropdown id="level" label="Workout Level" options="library" /> */}
-            <Dropdown id="level" label="Workout Level" options="library" />
+            <Dropdown id="level" label="Workout Level" options="bins" allowEmpty={true} />
             <Dropdown id="numBlocks" label="# of Blocks" options={numBlocks} />
-            <Dropdown id="intro" label="Intro" options="availableVideos" />
+            <Dropdown id="intro" label="Intro" options="availableVideos" allowEmpty={true} allowImport={true} />
             <PathBox id="warmup" label="warmup" />
             <h2>Blocks</h2>
             <Blocks />

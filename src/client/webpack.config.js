@@ -1,7 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const pluginConfig = require("../pluginrc.js");
+const pluginConfig = require("../../pluginrc");
 // const distFolder = pluginConfig.destinationFolder
 const distFolder = path.join(pluginConfig.destinationFolder, pluginConfig.extensionBundleId);
 const srcFolder = pluginConfig.sourceFolder;
@@ -16,7 +16,7 @@ module.exports = ({
         rules: [
             {
                 test: /\.[tj]sx?$/,
-                exclude: /node_modules/,
+                exclude: [/node_modules/, /webpack-config.js/],
                 loader: "babel-loader",
                 options: {
                     presets: [
