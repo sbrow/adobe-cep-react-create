@@ -2,7 +2,7 @@
  * @author Tomer Riko Shalev
  */
 
-import session from './src/Session'
+import session from './Session'
 
 window['session'] = session
 
