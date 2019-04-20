@@ -7,7 +7,7 @@ export interface IFormState {
     [key: string]: any;
     blocks: any[];
     bins?: string[];
-    availableVideos?: string[];
+    availableVideos?: SimpleProjectItem[];
 }
 export interface SetAction extends Action {
     type: "set";

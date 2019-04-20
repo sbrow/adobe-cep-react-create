@@ -20,7 +20,7 @@ export class Session {
         this.logger = createLogger(logOpts);
         this.scriptLoader = new ScriptLoader(this.logger);
         this.name = name;
-        this.init("main.jsx");
+        this.init("lib.jsx");
     }
 
     /**

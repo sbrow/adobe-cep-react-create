@@ -6,7 +6,7 @@ import { Block, IFormState, ProjectItemType, SetAction } from "../Types";
 export const importOption = "Import new...";
 
 export class AppStore {
-    public availableVideos: string[];
+    public availableVideos: SimpleProjectItem[];
     public level: string;
     public numBlocks: number;
     public bins: string[];
@@ -80,7 +80,7 @@ export class AppStore {
     public videos(): string[] {
         const imports = new Array<string>();
         try {
-            const push = (...items: string[]) => {
+            const push = (...items: SimpleProjectItem[]) => {
                 items.forEach((item) => {
                     switch (item) {
                         case undefined:
@@ -88,7 +88,12 @@ export class AppStore {
                         case "":
                             break;
                         default:
-                            imports.push(item);
+                            for (const video of this.availableVideos) {
+                                if (video.name === item) {
+                                    imports.push(video);
+                                    break;
+                                }
+                            }
                     }
                 });
             };
@@ -215,7 +220,7 @@ export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction
 
     async function updateBins(): Promise<boolean> {
         try {
-            const functionName = "getBins";
+            const functionName = "getBinsJSON";
             controller.debug("Waiting for bins...", { source });
             const bins = await window.session.run(functionName);
             controller.debug("Bins received.", { source });
@@ -232,11 +237,11 @@ export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction
     async function updateAvail(): Promise<boolean> {
         try {
             const binName = (state.level === "") ? undefined : state.level;
-            const projectItems: Array<{ name: string, type: number }> = await window.session.run("listProjectItemsJSON", binName);
+            const projectItems: SimpleProjectItem[] = await window.session.run("listProjectItemsJSON", binName);
             const videos: string[] = [];
             for (const item of projectItems) {
                 if (item.type === ProjectItemType.Clip) {
-                    videos.push(item.name);
+                    videos.push(item);
                 }
             }
             if (state.availableVideos !== videos) {

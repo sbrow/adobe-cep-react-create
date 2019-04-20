@@ -52,6 +52,12 @@ export function Dropdown(props: DropdownProps): JSX.Element {
     if (props.allowImport === true) {
         options.push(importOption);
     }
+    for (let i = 0; i < options.length; i++) {
+
+        if (typeof options[i] === "object") {
+            options[i] = options[i].name;
+        }
+    }
     return (
         <div id={props.id} class="row">
             <label htmlFor={`${props.id}-data`}>{props.label}</label>

@@ -10,31 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 // @include "./JSON.jsx"
-
-// TODO: move to `test.jsx`.
-function test_host(jsonString: JSONString) {
-    const res = JSON.parse(jsonString);
-    return `hola from extendscript "${res.name}"`;
-}
-
-function getProjectItem(name: string, entrypoint?: ProjectItem): ProjectItem | null {
-    try {
-        const entry = entrypoint || app.project.rootItem;
-        const children = entry.children;
-        if (children === undefined) {
-            return null;
-        }
-        for (let i = 0; i < children.numItems; i++) {
-            const child = children[i];
-            if (child.name === name) {
-                return child;
-            }
-        }
-    } catch (error) {
-        alert(`list returned ${error}`);
-    }
-    return null;
-}
+// @include "./private.jsx"
 
 /**
  * Imports a video into bin `binName` and returns the name of the imported file.
@@ -45,12 +21,13 @@ function getProjectItem(name: string, entrypoint?: ProjectItem): ProjectItem | n
 function importVideo(binName?: string): string {
     try {
         const project = app.project;
-        // app.project.rootItem.select();
+        project.rootItem.select();
         const prevBin = project.getInsertionBin();
         const bin = (binName === undefined) ? null : getProjectItem(binName);
         if (bin !== null) {
             bin.select();
         }
+        alert(JSON.stringify({ currentBin: project.getInsertionBin().name, bin: (bin !== null), binName }));
 
         const file = File.openDialog("Select file");
         if (file !== null) {
@@ -64,7 +41,7 @@ function importVideo(binName?: string): string {
                 const newItemName = file.name;
                 alert(JSON.stringify({ name: newItemName }));
                 const newItem = getProjectItem(newItemName, searchBin);
-                alert(newItem);
+                alert(JSON.stringify(newItem));
                 if (newItem !== null) {
                     return JSON.stringify(newItem.name);
                 }
@@ -79,78 +56,43 @@ function importVideo(binName?: string): string {
 /**
  * @returns {string} a JSONString Array of all top level bins.
  */
-function getBins(): string {
-    const items = listProjectItems() || [];
-    const bins = [];
-
-    for (const item of items) {
-        if (item.type === 2) {
-            bins.push(item.name);
-        }
-    }
-    return JSON.stringify(bins);
-}
-
-function listProjectItems(entrypoint?: ProjectItem | string): Array<{ name: string, type: number }> | null {
-    try {
-        const ret: Array<{ name: string, type: number }> = [];
-
-        const getEntry = (pt: ProjectItem | string | undefined) => {
-            switch (typeof pt) {
-                case "undefined":
-                    return app.project.rootItem;
-                case "string":
-                    return getProjectItem(pt);
-                default:
-                    return pt;
-            }
-        };
-        const entry = getEntry(entrypoint);
-
-        if (entry !== null) {
-            const children = entry.children;
-            if (children !== undefined) {
-                for (let i = 0; i < children.numItems; i++) {
-                    const child = children[i];
-                    ret.push({
-                        name: child.name,
-                        type: child.type,
-                    });
-                }
-            }
-        }
-        return ret;
-    } catch (err) {
-        alert("list returned " + err);
-    }
-    return null;
+function getBinsJSON(): string {
+    return JSON.stringify(getProjectItems(undefined, { types: [ProjectItemType.BIN] }));
 }
 
 function listProjectItemsJSON(entrypoint?: ProjectItem | string): JSONString {
-    return JSON.stringify(listProjectItems(entrypoint));
+    const ret: SimpleProjectItem[] = [];
+    const projectItems = getProjectItems(entrypoint);
+    for (const item of projectItems) {
+        ret.push({
+            name: item.name,
+            type: item.type,
+            path: item.treePath,
+        });
+    }
+    return JSON.stringify(ret);
 }
 
 /**
- *
  * @returns the number of clips inserted.
  */
-function insertClips(clips: string | string[]): number {
+function insertClips(clipNames: string | string[], binName?: string): number {
     const project = app.project;
     const lib = project.rootItem.children;
     let inserted = 0;
     try {
-        if (typeof clips === "string") {
-            clips = JSON.parse(clips);
+        if (typeof clipNames === "string") {
+            clipNames = JSON.parse(clipNames);
         }
 
         let inTime: number | null = 0;
-        if (lib !== undefined && clips instanceof Array) {
-            for (const clipName of clips) {
+        if (lib !== undefined && clipNames instanceof Array) {
+            for (const clipName of clipNames) {
                 for (let j = 0; j < lib.numItems; j++) {
                     const child = lib[j];
                     if (child.name === clipName && child.type === ProjectItemType.CLIP) {
                         if (inTime !== null) {
-                            const clip = child as Clip;
+                            const clip = (child as Clip);
                             inTime = insert(clip, inTime);
                             inserted++;
                             break;
@@ -190,9 +132,4 @@ function insert(clip: Clip, inTime: number): number | null {
 
     const time = inTime + clip.getOutPoint().seconds;
     return Number(time);
-}
-
-function Home(): string {
-    // return $.getEnv("HOME");
-    return JSON.stringify($.toSource());
 }

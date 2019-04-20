@@ -46,22 +46,27 @@ export function Form(): JSX.Element {
     const [state, dispatch] = useContext(StoreContext);
     const numBlocks = [1, 2, 3];
 
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        window.alert(state.videos());
+        event.preventDefault();
+    };
+
     /*     useEffect(() => {
             Update(state, dispatch);
         }); */
 
     return (<React.Fragment>
-        <form>
+        <form onSubmit={handleSubmit}>
             <h2>Intro</h2>
             <Dropdown id="level" label="Workout Level" options="bins" allowEmpty={true} />
             <Dropdown id="numBlocks" label="# of Blocks" options={numBlocks} />
             <Dropdown id="intro" label="Intro" options="availableVideos" allowEmpty={true} allowImport={true} />
-            <PathBox id="warmup" label="warmup" />
+            <Dropdown id="warmup" label="warmup" options="availableVideos" allowEmpty={true} allowImport={true} />
             <h2>Blocks</h2>
             <Blocks />
             <h2>Conclusion</h2>
-            <PathBox id="outro" label="Outro" />
-            <Refresh /><Submit />
+            <Dropdown id="outro" label="outro" options="availableVideos" allowEmpty={true} allowImport={true} />
+            <Refresh /><input type="submit" value="submit" />
         </form>
         <Display />
     </React.Fragment>);

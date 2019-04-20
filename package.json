@@ -7,7 +7,7 @@
   ],
   "description": "demo for CEP",
   "license": "ISC",
-  "main": "./client/src/index.jsx",
+  "main": "./client/src/index.tsx",
   "scripts": {
     "start": "webpack-dev-server --config ./src/client/webpack.config.js --env.target=web --open --mode development",
     "build": "node ./build-scripts/build.js",
