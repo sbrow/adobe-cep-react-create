@@ -85,7 +85,7 @@ function insertClips(clipNames: string | string[]): number {
             clipNames = JSON.parse(clipNames);
         }
 
-        let inTime: number | null = 0;
+        let inTime: number | undefined;
         if (lib !== undefined && clipNames instanceof Array) {
             for (const clipName of clipNames) {
                 for (let j = 0; j < lib.numItems; j++) {
@@ -114,19 +114,40 @@ function insertClips(clipNames: string | string[]): number {
  * @param {number} inTime
  * @returns {(number | null)} The end time of the clip in sequence.
  */
-function insert(clip: Clip, inTime: number): number | null {
+function insert(clip: Clip, inTime: number = -400000): number | undefined {
     if (clip.type !== ProjectItemType.CLIP) {
         alert("Attempted to insert a ProjectItem that is not a clip.");
-        return null;
+        return undefined;
     }
 
     const project = app.project;
     if (project.activeSequence === undefined) {
         alert("There is no active sequence.");
-        return null;
+        return undefined;
     }
     const sequence = project.activeSequence;
     const video = sequence.videoTracks[0];
+
+    if (inTime === -400000) {
+        const formatID: number = sequence.getSettings().videoDisplayFormat;
+
+        const getFormat = (n: number): VideoFormat | undefined => {
+            switch (n) {
+                case 102:
+                    return videoFormats[102];
+                default:
+                    return undefined;
+            }
+        };
+        const format = getFormat(formatID);
+
+        if (format !== undefined) {
+            const { end, timebase } = sequence;
+            inTime = JSON.parse(ticksToSecond(end, timebase, format.fps));
+        } else {
+            inTime = 0;
+        }
+    }
 
     video.insertClip(clip, inTime);
 

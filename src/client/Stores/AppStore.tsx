@@ -106,7 +106,7 @@ export class AppStore {
                 }
                 if (block.exercises !== undefined) {
                     for (let i = 0; i < block.rounds; i++) {
-                        push(...block.exercises);
+                        push(...block.exercises.filter((elem) => elem !== ""));
                     }
                 }
             });
