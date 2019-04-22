@@ -90,3 +90,24 @@ function matches(obj: any, filter: ItemFilter): boolean {
     }
     return true;
 }
+
+/**
+ *
+ *
+ * @param {string} path The path to the ProjectItem
+ * @returns {ProjectItem} The item at the path.
+ */
+function getProjectItemFromPath(path: string): ProjectItem {
+    let previousPart: ProjectItem = app.project.rootItem;
+    let part: ProjectItem = previousPart;
+    try {
+        const parts = path.split("\\").slice(2);
+        for (const currentPart of parts) {
+            part = getProjectItem(currentPart, previousPart);
+            previousPart = part;
+        }
+    } catch (error) {
+        alert(error);
+    }
+    return part;
+}

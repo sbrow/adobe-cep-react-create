@@ -90,8 +90,7 @@ export class AppStore {
                         default:
                             for (const video of this.availableVideos) {
                                 if (video.name === item) {
-                                    // @todo: Fix
-                                    imports.push(video.name);
+                                    imports.push(video.path);
                                     break;
                                 }
                             }
