@@ -17,8 +17,8 @@ import { App } from "./App";
 window.onerror = (event: string | Event, source?: any, fileno?: any, columnNumber?: any, error?: any): void => {
     console.error(error);
     if (controller.hasSession()) {
-        const source = (typeof event === "string") ? event : event.type;
-        controller.error(error.message, { source });
+        const src = (typeof event === "string") ? event : event.type;
+        controller.error(error.message, { source: src });
     }
 };
 

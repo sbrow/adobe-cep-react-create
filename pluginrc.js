@@ -6,10 +6,10 @@ const certPath = path.join(destFolder, "cert.p12");
 const package = require("./package.json");
 
 module.exports = {
+    cepVersion: "7.0",
     extensionBundleId: `com.${package.name}`,
     extensionBundleName: package.name,
     extensionBundleVersion: package.version,
-    cepVersion: "7.0",
     panelName: package.name,
     width: "400",
     height: "600",
