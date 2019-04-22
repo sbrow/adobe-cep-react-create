@@ -18,7 +18,7 @@ export interface SetAction extends Action {
     };
 }
 
-export interface Block {
+export interface BlockStore {
     intro: string;
     rounds: number;
     warmup?: string;
@@ -28,7 +28,7 @@ export interface Block {
 export interface Workout {
     intro: string;
     warmup?: string;
-    blocks?: Block[];
+    blocks?: BlockStore[];
     outro?: string;
 }
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createContext, useReducer } from "react";
 import controller from "../controller";
-import { Block, IFormState, ProjectItemType, SetAction } from "../Types";
+import { BlockStore, IFormState, ProjectItemType, SetAction } from "../Types";
 
 export const importOption = "Import new...";
 
@@ -12,7 +12,7 @@ export class AppStore {
     public bins: string[];
     public intro: string;
     public warmup: string;
-    public blocks: Block[];
+    public blocks: BlockStore[];
     public outro: string;
 
     constructor(init: IFormState) {
@@ -64,7 +64,7 @@ export class AppStore {
     public updateBlocks() {
         while (this.blocks.length != this.numBlocks) {
             if (this.blocks.length < this.numBlocks) {
-                this.blocks.push({ intro: "", exercises: [] });
+                this.blocks.push({ rounds: 1, intro: "", exercises: [] });
             } else {
                 this.blocks.pop();
             }
@@ -198,15 +198,15 @@ function reducer(state: AppStore, action: SetAction): AppStore {
 }
 
 export const initState = new AppStore({
+    bins: [],
     blocks: [{
-        rounds: 1,
-        excercises: ["", ""],
+        exercises: [],
         intro: "",
+        rounds: 1,
     }],
     level: "",
     // @todo investigate.
     // bins: getBins(),
-    bins: [],
     numBlocks: 1,
 });
 
