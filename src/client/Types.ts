@@ -20,6 +20,7 @@ export interface SetAction extends Action {
 
 export interface Block {
     intro: string;
+    rounds: number;
     warmup?: string;
     exercises: string[];
 }
@@ -36,4 +37,10 @@ export enum ProjectItemType {
     Bin,
     Root,
     File,
+}
+export interface NumberInputProps {
+    id: string;
+    label: string;
+    min?: number;
+    max?: number;
 }

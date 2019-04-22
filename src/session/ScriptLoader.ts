@@ -17,10 +17,9 @@ class ScriptLoader {
         this.logger = logger;
         this.nextID = 0;
         // this.cs.evalScript("$._PPP_.registerProjectChangedFxn()");
-        this.cs.evalScript("$._PPP_.registerProjectChangedFxn()");
-        this.cs.addEventListener("com.adobe.csxs.events.WorkspaceChanged", function(event) {
-            alert(event.data);
-        });
+        /*         this.cs.addEventListener("com.adobe.csxs.events.WorkspaceChanged", function(event) {
+                    alert(event.data);
+                }); */
     }
 
     public getID(): number {

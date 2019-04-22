@@ -105,8 +105,9 @@ export class AppStore {
                     push(block.warmup);
                 }
                 if (block.exercises !== undefined) {
-                    window.alert(block.exercises);
-                    push(...block.exercises);
+                    for (let i = 0; i < block.rounds; i++) {
+                        push(...block.exercises);
+                    }
                 }
             });
             push(this.outro);
@@ -198,6 +199,7 @@ function reducer(state: AppStore, action: SetAction): AppStore {
 
 export const initState = new AppStore({
     blocks: [{
+        rounds: 1,
         excercises: ["", ""],
         intro: "",
     }],

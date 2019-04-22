@@ -47,13 +47,14 @@ export function Form(): JSX.Element {
     const numBlocks = [1, 2, 3];
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        window.alert(state.videos());
         event.preventDefault();
+        // window.alert(state.videos());
+        window.session.run("insertClips", state.videos());
     };
 
-    /* useEffect(() => {
-        Update(state, dispatch);
-    }); */
+    /*    useEffect(() => {
+           Update(state, dispatch);
+       }, [state]); */
 
     return (<React.Fragment>
         <form onSubmit={handleSubmit}>
@@ -68,6 +69,6 @@ export function Form(): JSX.Element {
             <Dropdown id="outro" label="outro" options="availableVideos" allowEmpty={true} allowImport={true} />
             <Refresh /><input type="submit" value="submit" />
         </form>
-        <Display />
+        {/* <Display /> */}
     </React.Fragment>);
 }
