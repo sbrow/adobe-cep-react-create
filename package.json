@@ -29,7 +29,10 @@
     "watch": "concurrently \"npm run build:jsx -- -w\" \"npm run watch:client\" \"npm run watch:session\"",
     "clean": "rm -f ./logs/*",
     "lint": "tslint -c ./tslint.json \"./src/**/*.ts\" --exclude \"./src/**/*.d.ts\"",
-    "prebuild": "npm run clean"
+    "prebuild": "npm run clean",
+    "preversion": "git stash save \"pre-version\"",
+    "version": "npm version",
+    "postversion": "git stash pop"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.3",
