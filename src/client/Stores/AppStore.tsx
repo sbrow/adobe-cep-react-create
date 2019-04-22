@@ -80,7 +80,7 @@ export class AppStore {
     public videos(): string[] {
         const imports = new Array<string>();
         try {
-            const push = (...items: SimpleProjectItem[]) => {
+            const push = (...items: string[]) => {
                 items.forEach((item) => {
                     switch (item) {
                         case undefined:
@@ -90,7 +90,8 @@ export class AppStore {
                         default:
                             for (const video of this.availableVideos) {
                                 if (video.name === item) {
-                                    imports.push(video);
+                                    // @todo: Fix
+                                    imports.push(video.name);
                                     break;
                                 }
                             }
@@ -104,9 +105,11 @@ export class AppStore {
                     push(block.warmup);
                 }
                 if (block.exercises !== undefined) {
+                    window.alert(block.exercises);
                     push(...block.exercises);
                 }
             });
+            push(this.outro);
         } catch (e) {
             controller.error(JSON.stringify(e), { source: "state.videos" });
         }
