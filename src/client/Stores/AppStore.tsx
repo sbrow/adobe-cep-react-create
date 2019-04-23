@@ -23,7 +23,7 @@ export class AppStore {
         this.blocks = init.blocks;
         this.outro = init.outro;
         this.bins = init.bins || [];
-        this.availableVideos = init.availableVideos || ["", importOption];
+        this.availableVideos = init.availableVideos || [];
     }
 
     /**
@@ -228,7 +228,9 @@ export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction
             controller.debug("Waiting for bins...", { source });
             const bins = await window.session.run(functionName);
             controller.debug("Bins received.", { source });
-            if (state.bins !== bins) {
+            const t = (JSON.stringify(state.bins) !== JSON.stringify(bins));
+            controller.debug(JSON.stringify({ stateBins: state.bins, bins, neq: t }), { source });
+            if (t) {
                 dispatch({ type: "set", source, payload: { key: "bins", value: bins } });
                 return true;
             }
@@ -242,19 +244,18 @@ export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction
         try {
             const binName = (state.level === "") ? undefined : state.level;
             const projectItems: SimpleProjectItem[] = await window.session.run("listProjectItemsJSON", binName);
-            const videos: string[] = [];
+            const videos: SimpleProjectItem[] = [];
             for (const item of projectItems) {
                 if (item.type === ProjectItemType.Clip) {
                     videos.push(item);
                 }
             }
-            if (state.availableVideos !== videos) {
+            const t = JSON.stringify(videos) !== JSON.stringify(state.availableVideos);
+            controller.debug(JSON.stringify({ videos, avail: state.availableVideos, neq: t }), { source });
+            if (t) {
                 dispatch({ type: "set", source, payload: { key: "availableVideos", value: videos } });
                 return true;
             }
-            // const i = newState.availableVideos.indexOf(clipName);
-            // const max = (a: number, b: number) => (a > b) ? a : b;
-            // newState.set(idToPath(action.payload.key), newState.availableVideos[max(i, 0)]);
         } catch (error) {
             controller.error(`Couldn't call run: ${error}`, { source });
         }
@@ -268,15 +269,9 @@ export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction
 
     try {
         if (controller.hasSession()) {
+            controller.debug("Updating", { source });
             await updateBins();
-            let clipName;
-            if (state.intro === importOption) {
-                clipName = await importVideo();
-            }
             await updateAvail();
-            if (typeof clipName === "string") {
-                dispatch({ type: "set", source, payload: { key: "intro", value: clipName } });
-            }
         } else {
             window.alert("Window does not have session.");
         }
