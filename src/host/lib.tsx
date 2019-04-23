@@ -19,36 +19,37 @@ governing permissions and limitations under the License.
  * @returns {string} The name of the imported file.
  */
 function importVideo(binName?: string): string {
+    const source = "importVideo";
     try {
+        if (binName === "") {
+            binName = undefined;
+        }
         const project = app.project;
         project.rootItem.select();
         const prevBin = project.getInsertionBin();
-        const bin = (binName === undefined) ? null : getProjectItem(binName);
+        const bin = (binName === undefined) ? null : getProjectItem(binName) || project.rootItem;
         if (bin !== null) {
             bin.select();
         }
-        // alert(JSON.stringify({ currentBin: project.getInsertionBin().name, bin: (bin !== null), binName }));
 
         const file = File.openDialog("Select file");
         if (file !== null) {
             const filename = file.fsName;
             const success = project.importFiles([filename], false);
             if (prevBin !== null) {
-                // prevBin.select();
+                prevBin.select();
             }
             if (success) {
-                const searchBin = (bin === null) ? undefined : bin;
-                const newItemName = file.name;
-                // alert(JSON.stringify({ name: newItemName }));
+                const searchBin = (bin === null) ? project.rootItem : bin;
+                const newItemName = filename.replace(/.*\//g, "");
                 const newItem = getProjectItem(newItemName, searchBin);
-                // alert(JSON.stringify(newItem));
                 if (newItem !== null) {
                     return JSON.stringify(newItem.name);
                 }
             }
         }
     } catch (error) {
-        alert(error);
+        alert(JSON.stringify({ error: error.message, source }));
     }
     return "";
 }
@@ -82,7 +83,11 @@ function insertClips(clipNames: string | string[]): number {
     let inserted = 0;
     try {
         if (typeof clipNames === "string") {
-            clipNames = JSON.parse(clipNames.replace(/\\/g, "\\\\"));
+            if (clipNames === "") {
+                return 0;
+            } else {
+                clipNames = JSON.parse(clipNames.replace(/\\/g, "\\\\"));
+            }
         }
 
         if (lib !== undefined && clipNames instanceof Array) {

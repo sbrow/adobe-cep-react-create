@@ -72,15 +72,16 @@ export class Session {
     }
 
     public async run(functionName: string, arg?: any): Promise<any> {
+        const source = "run";
         try {
             const result = await this.scriptLoader.evalScript(functionName, arg);
-            this.logger.debug(`rawResult: ${result}`, { source: this.name });
+            this.logger.debug(`rawResult: ${result}`, { source });
             const resultString = this.scriptLoader.stringify(result);
-            this.logger.debug(`resultString: ${resultString}`, { source: this.name });
-            this.logger.debug(`result: ${JSON.stringify(JSON.parse(resultString))}`, { source: this.name });
+            this.logger.debug(`resultString: ${resultString}`, { source });
+            this.logger.debug(`result: ${JSON.stringify(JSON.parse(resultString))}`, { source });
             return JSON.parse(resultString);
         } catch (error) {
-            window.alert(error);
+            this.logger.error(error, { source });
         }
         return;
     }
