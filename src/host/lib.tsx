@@ -27,7 +27,7 @@ function importVideo(binName?: string): string {
         if (bin !== null) {
             bin.select();
         }
-        alert(JSON.stringify({ currentBin: project.getInsertionBin().name, bin: (bin !== null), binName }));
+        // alert(JSON.stringify({ currentBin: project.getInsertionBin().name, bin: (bin !== null), binName }));
 
         const file = File.openDialog("Select file");
         if (file !== null) {
@@ -39,9 +39,9 @@ function importVideo(binName?: string): string {
             if (success) {
                 const searchBin = (bin === null) ? undefined : bin;
                 const newItemName = file.name;
-                alert(JSON.stringify({ name: newItemName }));
+                // alert(JSON.stringify({ name: newItemName }));
                 const newItem = getProjectItem(newItemName, searchBin);
-                alert(JSON.stringify(newItem));
+                // alert(JSON.stringify(newItem));
                 if (newItem !== null) {
                     return JSON.stringify(newItem.name);
                 }
@@ -89,10 +89,13 @@ function insertClips(clipNames: string | string[]): number {
             let inTime: number | undefined;
             for (const clipName of clipNames) {
                 const clip = getProjectItemFromPath(clipName);
-                if (clipName.match(/[^\\]*$/g)[0] === clip.name && clip.type === ProjectItemType.CLIP) {
-                    if (inTime !== null) {
-                        inTime = insert((clip as Clip), inTime);
-                        inserted++;
+                const name = clipName.match(/[^\\]*$/g);
+                if (name !== null && name[0] === clip.name) {
+                    if (clip.type === ProjectItemType.CLIP) {
+                        if (inTime !== null) {
+                            inTime = insert((clip as Clip), inTime);
+                            inserted++;
+                        }
                     }
                 }
             }

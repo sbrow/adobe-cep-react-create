@@ -165,9 +165,9 @@ function insert(clip: Clip, inTime: number = 0): number | undefined {
         const formatID: number = sequence.getSettings().videoDisplayFormat;
         format = getFormat(formatID);
 
-        const {end, timebase} = sequence;
-        const edn = ticksToSecond(end, timebase, format.fps) || "";
-        alert(JSON.stringify({inTime, time, out, end: edn}));
+        // const {end, timebase} = sequence;
+        // const edn = (format !== undefined) ? ticksToSecond(end, timebase, format.fps) : "";
+        // alert(JSON.stringify({inTime, time, out, end: edn}));
     } catch (error) {
         alert(error);
     }
