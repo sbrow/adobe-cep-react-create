@@ -86,14 +86,14 @@ function insertClips(clipNames: string | string[]): number {
         }
 
         if (lib !== undefined && clipNames instanceof Array) {
-            let inTime: number | undefined;
+            let inTime: number | undefined = Number(project.activeSequence.end);
             for (const clipName of clipNames) {
                 const clip = getProjectItemFromPath(clipName);
                 const name = clipName.match(/[^\\]*$/g);
                 if (name !== null && name[0] === clip.name) {
                     if (clip.type === ProjectItemType.CLIP) {
-                        if (inTime !== null) {
-                            inTime = insert((clip as Clip), inTime);
+                        if (inTime !== undefined) {
+                            inTime = insert((clip as Clip), (inTime as Ticks));
                             inserted++;
                         }
                     }

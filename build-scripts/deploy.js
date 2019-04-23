@@ -1,3 +1,4 @@
+//@ts-check
 /**
  * deploy in dev mode or production
  */
@@ -9,28 +10,23 @@ const utils = require("./utils.js");
 const pluginConfig = require("../pluginrc.js");
 const distFolder = path.join(pluginConfig.destinationFolder, pluginConfig.extensionBundleId);
 const srcFolder = pluginConfig.sourceFolder;
-var env = (process.env.npm_config_production.match(/1|true/)) ? "production" : "development";
-const isDev = env === "development"
+var env = (process.env.npm_config_production !== undefined && process.env.npm_config_production.match(/1|true/)) ? "production" : "development";
+const isDev = env === "development";
 const isWindows = utils.resolveWindows();
 const extensionBundleId = pluginConfig.extensionBundleId;
 const resolvedTargetFolder = resolveDeploymentFolder();
 
 deploy();
 
-/**
- * deploy
- *
- */
 function deploy() {
     utils.log_progress(`DEPLOY for ${env}`, "blue");
 
     cleanTarget(resolvedTargetFolder);
 
     if (isDev) {
-        deployDevMode()
-    }
-    else {
-        deployProdMode()
+        deployDevMode();
+    } else {
+        deployProdMode();
     }
 
     printDeploymentFolder();
@@ -73,7 +69,7 @@ function cleanTarget(target) {
 
     try {
         if (fs.existsSync(target) && fs.lstatSync(target).isSymbolicLink()) {
-            fs.unlinkSync(target)
+            fs.unlinkSync(target);
         }
         utils.deleteFolderRecursive(target);
     } catch (err) {
@@ -107,7 +103,7 @@ function deployDevMode() {
 
     utils.log_progress("creating symlink into extensions folder");
     try {
-        var type = isWindows ? "junction" : "dir"
+        var type = isWindows ? "junction" : "dir";
 
         fs.symlinkSync(distFolder, resolvedTargetFolder, type);
     } catch (err) {

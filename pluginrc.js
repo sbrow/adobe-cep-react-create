@@ -5,31 +5,37 @@ const destFolder = path.join(root, "dist");
 const certPath = path.join(destFolder, "cert.p12");
 const package = require("./package.json");
 
+/**
+ * Converts a string to title case.
+ * @param {string} input
+ */
+function title(input) {
+    return input.split(" ")
+        .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
+        .join(" ");
+}
+
 module.exports = {
     cepVersion: "7.0",
     extensionBundleId: `com.${package.name}`,
     extensionBundleName: package.name,
     extensionBundleVersion: package.version,
-    panelName: package.name,
+    panelName: title(package.name.replace("-", " ")),
     width: "400",
     height: "600",
     root: root,
     sourceFolder: srcFolder,
     destinationFolder: destFolder,
     certificate: {
-        customCert: {
-            path: "",
-            password: "password",
-        },
         selfSign: {
             country: "US",
-            province: "CA",
+            province: "NY",
             org: "org",
-            name: "name",
+            name: "Spencer Brower",
             password: "password",
-            locality: "locality",
+            locality: "Dryden",
             orgUnit: "orgUnit",
-            email: "your@email.com",
+            email: "brower.spencer@gmail.com",
             output: certPath,
         },
     },
