@@ -18,7 +18,7 @@ function Option(arg: OptionProps | string): JSX.Element {
 
 interface DropdownProps {
     label?: string;
-    options: any[];
+    options: any[] | string;
     id: string;
     parent?: any;
 }
@@ -33,11 +33,13 @@ export function Dropdown(props: DropdownProps): JSX.Element {
     const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         dispatch({ type: "set", payload: { key: props.id, value: event.target.value } });
     };
+
+    const options = (props.options instanceof Array) ? props.options : state[props.options];
     return (
         <div id={props.id} class="row">
             <label htmlFor={`${props.id}-data`}>{props.label}</label>
             <select id={`${props.id}-data`} value={state.get(props.id)} onChange={onChange} {...props.id}>
-                {props.options.map((listValue) => {
+                {options.map((listValue) => {
                     return (
                         <Option value={listValue} />
                     );

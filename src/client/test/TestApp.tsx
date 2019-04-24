@@ -1,7 +1,7 @@
 import * as React from "react";
 
 // import { Form } from "../components/Form";
-import { Session } from "../../session-src/src/Session";
+import { Session } from "../../session/src/Session";
 import controller from "../controller";
 
 // @ts-ignore

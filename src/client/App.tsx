@@ -3,7 +3,6 @@ import * as React from "react";
 
 import * as $ from "jquery";
 import { Form } from "./components/Form";
-import controller from "./controller";
 
 export function App(props: { title?: string }) {
     document.title = props.title;

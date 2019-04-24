@@ -1,13 +1,12 @@
 import * as React from "react";
 import { createContext, useReducer } from "react";
+import controller from "../controller";
 import { Block, IFormState, SetAction } from "../Types";
-
-// @ts-ignore
-const session: Session = window.session;
 
 export class AppStore {
     public level: number;
     public numBlocks: number;
+    public library: string[];
     public intro: string;
     public warmup: string;
     public blocks: Block[];
@@ -20,6 +19,7 @@ export class AppStore {
         this.warmup = init.warmup;
         this.blocks = init.blocks;
         this.outro = init.outro;
+        this.library = init.library;
     }
 
     /**
@@ -34,7 +34,9 @@ export class AppStore {
                 ret = ret[prop];
             } else {
                 if ("session" in window) {
-                    session.log(`"${key}" not in "${JSON.stringify(this)}"`, "error");
+                    // @ts-ignore
+                    const e = new Error(`"${key}" not in "${JSON.stringify(this)}"`);
+                    window.session.logger.log("error", e.message, { stack: e.stack.split("\n") });
                 }
                 return undefined;
             }
@@ -60,10 +62,23 @@ export class AppStore {
     public updateBlocks() {
         while (this.blocks.length != this.numBlocks) {
             if (this.blocks.length < this.numBlocks) {
-                this.blocks.push({});
+                this.blocks.push({ intro: "", exercises: [] });
             } else {
                 this.blocks.pop();
             }
+        }
+    }
+
+    public updateLibrary() {
+        const fresh = getBins();
+        if (fresh !== this.library) {
+            reducer(this, {
+                type: "set",
+                payload: {
+                    key: "library",
+                    value: fresh,
+                },
+            });
         }
     }
 
@@ -101,9 +116,7 @@ export class AppStore {
         } catch (e) {
             window.alert(JSON.stringify(e));
         }
-        if ("session" in window) {
-            session.log(`videos: ${JSON.stringify(imports)}`);
-        }
+        // session.log(`videos: ${JSON.stringify(imports)}`);
         return imports;
     }
 
@@ -123,7 +136,8 @@ export class AppStore {
             const videos = this.videos();
             if (videos.length > 0) {
                 window.alert(`inserting ${JSON.stringify(videos)}`);
-                return session.run("insertClips", videos);
+                // @ts-ignore
+                return window.session.run("insertClips", videos);
             }
         } catch (e) {
             window.alert(`error on insert: ${e}`);
@@ -179,14 +193,33 @@ function reducer(state: AppStore, action: SetAction): AppStore {
     }
     newState.set(idToPath(action.payload.key), action.payload.value);
     newState.updateBlocks();
+    newState.updateLibrary();
+
     return newState;
 }
 
+function getBins(): string[] {
+    try {
+        // @ts-ignore
+        window.session.run("getBins", null).then((res: string) => {
+            window.alert(res);
+            return JSON.parse(res);
+        }).catch((error) => {
+            window.alert(`run failed with: ${error}`);
+            return [];
+        });
+    } catch (error) {
+        window.alert(`Couldn't call run: ${error}`);
+        window.alert(controller.logz.join("\r\n"));
+        return [];
+    }
+}
 export const initState = new AppStore({
     blocks: [{}],
     level: 1,
     numBlocks: 1,
-
+    // library: getBins(),
+    library: [],
 });
 
 export const StoreContext = createContext<[AppStore, React.Dispatch<SetAction>]>([

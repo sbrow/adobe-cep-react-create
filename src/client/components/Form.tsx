@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useContext } from "react";
+import controller from "../controller";
 import { StoreContext, StoreProvider } from "../Stores/AppStore";
 import { Blocks } from "./Blocks";
 import { Dropdown } from "./Dropdown";
@@ -8,21 +9,26 @@ import { PathBox } from "./PathBox";
 // @ts-ignore
 const session: Session = window.session;
 
+// function parse
+
 function Button(): JSX.Element {
-    // const [state, dispatch] = useContext(StoreContext);
-    const state = useContext(StoreContext)[0];
+    const [state, dispatch] = useContext(StoreContext);
     const onClick = () => {
         try {
-            state.insert().then((res) => {
-                window.alert(`state.insert() returned ${JSON.stringify(res)}`);
+            // @ts-ignore
+            window.session.run("getBins", null).then((res: string) => {
+                dispatch({ type: "set", payload: { key: "library", value: JSON.parse(res) } });
+            }).catch((error) => {
+                window.alert(`run failed with: ${error}`);
+
             });
-        } catch (err) {
-            window.alert(err);
+        } catch (error) {
+            window.alert(`Couldn't call run: ${error}`);
+            window.alert(controller.logz.join("\r\n"));
         }
-        // dispatch({ type: "set", payload: { key: "blocks-1-intro", value: "3" } });
     };
 
-    return (<button type="button" onClick={onClick}>Click Me!</button>);
+    return (<button type="button" onClick={onClick}>Refresh</button>);
 }
 
 function Display() {
@@ -31,15 +37,11 @@ function Display() {
 }
 
 function Library() {
-    const items = session.run("listProjectItems", null).then((res) => {
-        window.alert(`res ${JSON.stringify(res)}`);
-        return res;
-    });
-    window.alert(`items ${JSON.stringify(items)}`);
+    const [state, dispatch] = useContext(StoreContext);
 
     return (
         <ul>
-            {items.map((item) => {
+            {state.library.map((item: any) => {
                 return <li>{item}</li>;
             })}
         </ul>
@@ -53,7 +55,7 @@ export function Form(): JSX.Element {
             <h1>{document.title}</h1>
             <form>
                 <h2>Intro</h2>
-                <Dropdown id="level" label="Workout Level" options={[1, 2, 3]} />
+                <Dropdown id="level" label="Workout Level" options="library" />
                 <Dropdown id="numBlocks" label="# of Blocks" options={[1, 2, 3]} />
                 <PathBox id="intro" label="Intro" />
                 <PathBox id="warmup" label="warmup" />
@@ -64,7 +66,7 @@ export function Form(): JSX.Element {
                 <Button />
             </form>
             <Display />
-            {/* <Library /> */}
+            <Library />
         </StoreProvider>
     );
 }

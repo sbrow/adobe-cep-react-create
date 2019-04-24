@@ -4,6 +4,6 @@
         "allowJs": true,
     },
     "include": [
-        "./src/client-src/**/*"
+        "./src/client/**/*"
     ]
 }
