@@ -1,6 +1,6 @@
 {
   "name": "cep-test",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "author": "Spencer Brower",
   "contributors": [
     "Tomer Riko Shalev"
@@ -22,7 +22,7 @@
     "release:prod": "npm run build:prod && npm run deploy:prod && npm run archive",
     "postinstall": "mkdir -p src/session/node_modules",
     "b": "babel ./client/js --out-dir ./client/out",
-    "test": "ts-mocha ./src/client/test/test.spec.ts"
+    "test": "ts-mocha -p ./src/client/tsconfig.json ./src/client/test/test.spec.ts"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.3",
@@ -36,6 +36,7 @@
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.13.0",
     "@types/react": "^16.8.10",
+    "@types/react-dom": "^16.8.4",
     "@types/winston": "^2.4.4",
     "babel-loader": "^8.0.5",
     "chalk": "^2.4.1",

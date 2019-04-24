@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 // @include "./JSON.jsx"
 
-
 function test_host(jsonString: JSONString) {
     let res = JSON.parse(jsonString);
     return `hola from extendscript "${res.name}"`;
@@ -68,12 +67,13 @@ function insertClips(clips: string | string[]): number {
 
         var inTime: number | null = 0;
         if (lib !== undefined && clips instanceof Array) {
-            for (const clip of clips) {
+            for (const clipName of clips) {
                 for (var j = 0; j < lib.numItems; j++) {
                     let child = lib[j];
-                    if (child.name === clip) {
+                    if (child.name === clipName && child.type === ProjectItemType.CLIP) {
                         if (inTime !== null) {
-                            inTime = insert(child, inTime);
+                            const clip = child as Clip;
+                            inTime = insert(clip, inTime);
                             inserted++;
                             break;
                         }
@@ -87,11 +87,19 @@ function insertClips(clips: string | string[]): number {
     return inserted;
 }
 
+/**
+ * Inserts a clip into the active sequence at the specified time.
+ *
+ * @param {Clip} clip
+ * @param {number} inTime
+ * @returns {(number | null)} The end time of the clip in sequence.
+ */
 function insert(clip: Clip, inTime: number): number | null {
     if (clip.type !== ProjectItemType.CLIP) {
         alert("Attempted to insert a ProjectItem that is not a clip.")
         return null;
     }
+
     const project = app.project;
     if (project.activeSequence === undefined) {
         alert("There is no active sequence.");
