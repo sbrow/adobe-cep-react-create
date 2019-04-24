@@ -91,7 +91,7 @@ function insertClips(clipNames: string | string[]): number {
         }
 
         if (lib !== undefined && clipNames instanceof Array) {
-            let inTime: number | undefined = Number(project.activeSequence.end);
+            let inTime: number | undefined = 0;
             for (const clipName of clipNames) {
                 const clip = getProjectItemFromPath(clipName);
                 const name = clipName.match(/[^\\]*$/g);

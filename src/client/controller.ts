@@ -45,7 +45,7 @@ class Controller {
             return;
         }
 
-        session.invokePlugin(options)
+        window.session.invokePlugin(options)
             .then((result: any) => console.log(result))
             .catch((error: Error) => console.error(error));
     }

@@ -1,5 +1,7 @@
 /* tslint:disable:only-arrow-functions */
 import { deepEqual, strictEqual } from "assert";
+import "jsdom";
+import "jsdom-global";
 import { describe, it } from "mocha";
 import rewire from "rewire";
 

@@ -11,3 +11,6 @@ interface ItemFilter {
     path?: string;
     depth?: number;
 }
+
+type Ticks = number;
+type Seconds = number;

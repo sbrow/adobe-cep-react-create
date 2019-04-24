@@ -2,6 +2,6 @@
  * @author Tomer Riko Shalev
  */
 
-import session from "./Session";
+import session from "./session";
 
 window.session = session;

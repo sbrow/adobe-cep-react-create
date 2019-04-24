@@ -11,7 +11,7 @@ const distFolder = pluginConfig.destinationFolder;
 const pluginFolder = path.join(distFolder, pluginConfig.extensionBundleId);
 const extensionBundleId = pluginConfig.extensionBundleId;
 const certificate_options = pluginConfig.certificate;
-const zxpFile = path.join(distFolder, `${pluginConfig.extensionBundleId}-${pluginConfig.extensionBundleVersion}-.zxp`);
+const zxpFile = path.join(distFolder, `${pluginConfig.extensionBundleId}-${pluginConfig.extensionBundleVersion}.zxp`);
 
 archive();
 

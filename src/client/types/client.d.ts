@@ -1,4 +1,4 @@
-import { Session } from "../../session/Session";
+import { Session } from "../../session/session";
 
 declare global {
     interface Window {

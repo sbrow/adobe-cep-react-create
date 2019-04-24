@@ -1,6 +1,7 @@
 export interface Action {
     type: string;
 }
+
 export interface IFormState {
     level: string;
     numBlocks: number;
@@ -9,6 +10,7 @@ export interface IFormState {
     bins?: string[];
     availableVideos?: SimpleProjectItem[];
 }
+
 export interface SetAction extends Action {
     type: "set";
     source: string;
@@ -25,22 +27,9 @@ export interface BlockStore {
     exercises: string[];
 }
 
-export interface Workout {
-    intro: string;
-    warmup?: string;
-    blocks?: BlockStore[];
-    outro?: string;
-}
-
 export enum ProjectItemType {
-    Clip = 1,
-    Bin,
-    Root,
-    File,
-}
-export interface NumberInputProps {
-    id: string;
-    label: string;
-    min?: number;
-    max?: number;
+    CLIP = 1,
+    BIN = 2,
+    ROOT = 3,
+    FILE = 4,
 }
