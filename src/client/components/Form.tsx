@@ -51,9 +51,9 @@ export function Form(): JSX.Element {
         event.preventDefault();
     };
 
-    /*     useEffect(() => {
-            Update(state, dispatch);
-        }); */
+    /* useEffect(() => {
+        Update(state, dispatch);
+    }); */
 
     return (<React.Fragment>
         <form onSubmit={handleSubmit}>

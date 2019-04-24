@@ -46,8 +46,8 @@ class Controller {
         }
 
         session.invokePlugin(options)
-            .then((res) => console.log(res))
-            .catch((err) => console.log(err));
+            .then((result: any) => console.log(result))
+            .catch((error: Error) => console.error(error));
     }
 
     get logger(): Logger | Console {

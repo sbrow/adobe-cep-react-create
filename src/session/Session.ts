@@ -104,10 +104,10 @@ export class Session {
         const pluginData = {
             destinationFolder: folderPath,
             exportInfoJson: isInfoChecked,
-            inspectOnlyVisibleLayers: isInspectVisibleChecked,
             exportMasks: isMasksChecked,
             exportTextures: isTexturesChecked,
             flatten: !isHierarchicalChecked,
+            inspectOnlyVisibleLayers: isInspectVisibleChecked,
             namePrefix: isMeaningfulNamesChecked ? "layer" : undefined,
         };
 
@@ -138,16 +138,16 @@ export class Session {
 }
 
 export const session = new Session({
-    level: "info",
     format: format.json(),
+    level: "info",
     transports: [
         new transports.File({
-            level: "debug",
             filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/main.log",
+            level: "debug",
         }),
         new transports.File({
-            format: format.cli(),
             filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/simple.log",
+            format: format.cli(),
         }),
     ],
 });

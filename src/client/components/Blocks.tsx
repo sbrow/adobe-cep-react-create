@@ -1,5 +1,6 @@
 import * as  React from "react";
 import { StoreContext } from "../Stores/AppStore";
+import { Dropdown } from "./Dropdown";
 import { PathBox } from "./PathBox";
 
 interface BlockProps {
@@ -13,10 +14,12 @@ function Block(props: BlockProps) {
     return (
         <React.Fragment key={id}>
             <h3>Block #{props.id}</h3>
-            <PathBox parent={state.blocks[props.id]} id={`${id}-intro`} label="Intro" />
+            <Dropdown id={`${id}-intro`} label="Intro" options="availableVideos"
+                allowEmpty={true} allowImport={true} />;
             {arr.map((_, i) => {
-                return (<PathBox id={`${id}-excercises-${i + 1}`} label={`Exercise #${i + 1}`} />);
-            })}
+                    return (<Dropdown id={`${id}-exercises-${i + 1}`} label={`Exercise #${i + 1}`}
+                        options="availableVideos" allowEmpty={true} allowImport={true} />);
+                })}
         </React.Fragment>
     );
 }

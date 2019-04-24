@@ -1,6 +1,6 @@
 {
   "name": "workout-builder",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "author": "Spencer Brower",
   "contributors": [
     "Tomer Riko Shalev"
@@ -14,12 +14,13 @@
     "build:dev": "npm run build",
     "build:prod": "npm run build --production",
     "build:jsx": "tsc -p ./src/host/tsconfig.json",
-    "deploy": "npm run deploy:dev",
-    "deploy:dev": "node ./build-scripts/deploy.js development",
-    "deploy:prod": "node ./build-scripts/deploy.js production",
+    "deploy": "node ./build-scripts/deploy.js",
+    "deploy:dev": "npm run deploy",
+    "deploy:prod": "npm run deploy --production",
     "archive": "node ./build-scripts/archive.js",
-    "release:dev": "npm run build:dev && npm run deploy:dev",
-    "release:prod": "npm run build:prod && npm run deploy:prod && npm run archive",
+    "release": "npm run build && npm run deploy",
+    "release:dev": "npm run release",
+    "release:prod": "npm run release --production && npm run archive",
     "babel": "babel ./client/js --out-dir ./client/out",
     "test": "ts-mocha -r jsdom-global/register -p ./src/client/tsconfig.json ./src/client/test/test.spec.ts",
     "make": "ts-node ./build-scripts/make.ts",
@@ -27,7 +28,11 @@
     "watch:session": "webpack --config ./src/session/webpack.config.js --mode development --watch --display minimal",
     "watch": "concurrently \"npm run build:jsx -- -w\" \"npm run watch:client\" \"npm run watch:session\"",
     "clean": "rm -f ./logs/*",
-    "prebuild": "npm run clean"
+    "lint": "tslint -c ./tslint.json \"./src/**/*.ts\" --exclude \"./src/**/*.d.ts\"",
+    "prebuild": "npm run clean",
+    "preversion": "git stash save \"pre-version\"",
+    "version": "npm version",
+    "postversion": "git stash pop"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.3",
@@ -42,6 +47,7 @@
     "@types/node": "^11.13.0",
     "@types/react": "^16.8.10",
     "@types/react-dom": "^16.8.4",
+    "@types/rewire": "^2.5.28",
     "@types/winston": "^2.4.4",
     "babel-loader": "^8.0.5",
     "chalk": "^2.4.1",

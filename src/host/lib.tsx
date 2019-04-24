@@ -76,7 +76,7 @@ function listProjectItemsJSON(entrypoint?: ProjectItem | string): JSONString {
 /**
  * @returns the number of clips inserted.
  */
-function insertClips(clipNames: string | string[], binName?: string): number {
+function insertClips(clipNames: string | string[]): number {
     const project = app.project;
     const lib = project.rootItem.children;
     let inserted = 0;

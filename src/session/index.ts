@@ -2,7 +2,6 @@
  * @author Tomer Riko Shalev
  */
 
-import session from './Session'
+import session from "./Session";
 
-window['session'] = session
-
+window.session = session;

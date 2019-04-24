@@ -1,43 +1,45 @@
 /**
  * deploy in dev mode or production
  */
-const { execSync } = require('child_process')
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
-const utils = require('./utils.js')
-const pluginConfig = require('../pluginrc.js')
-const distFolder = path.join(pluginConfig.destinationFolder, pluginConfig.extensionBundleId)
-const srcFolder = pluginConfig.sourceFolder
-var env = utils.resolveEnv()
-const isDev = env === 'development'
-const isWindows = utils.resolveWindows()
-const extensionBundleId = pluginConfig.extensionBundleId
-const resolvedTargetFolder = resolveDeploymentFolder()
+const { execSync } = require("child_process");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+const utils = require("./utils.js");
+const pluginConfig = require("../pluginrc.js");
+const distFolder = path.join(pluginConfig.destinationFolder, pluginConfig.extensionBundleId);
+const srcFolder = pluginConfig.sourceFolder;
+var env = (process.env.npm_config_production.match(/1|true/)) ? "production" : "development";
+const isDev = env === "development"
+const isWindows = utils.resolveWindows();
+const extensionBundleId = pluginConfig.extensionBundleId;
+const resolvedTargetFolder = resolveDeploymentFolder();
 
-deploy()
+deploy();
 
 /**
  * deploy
  *
  */
 function deploy() {
-    utils.log_progress(`DEPLOY for ${env}`, 'blue')
+    utils.log_progress(`DEPLOY for ${env}`, "blue");
 
-    cleanTarget(resolvedTargetFolder)
+    cleanTarget(resolvedTargetFolder);
 
-    if (isDev)
+    if (isDev) {
         deployDevMode()
-    else
+    }
+    else {
         deployProdMode()
+    }
 
-    printDeploymentFolder()
+    printDeploymentFolder();
 
-    utils.log_progress('DONE', 'blue')
+    utils.log_progress("DONE", "blue");
 }
 
 function printDeploymentFolder() {
-    utils.log_progress(`deployed to folder ${resolvedTargetFolder}`, 'green')
+    utils.log_progress(`deployed to folder ${resolvedTargetFolder}`, "green");
 }
 
 /**
@@ -45,7 +47,7 @@ function printDeploymentFolder() {
  *
  */
 function resolveDeploymentFolder() {
-    return path.join(resolveExtensionFolder(), extensionBundleId)
+    return path.join(resolveExtensionFolder(), extensionBundleId);
 }
 
 /**
@@ -54,9 +56,9 @@ function resolveDeploymentFolder() {
  */
 function resolveExtensionFolder() {
     if (isWindows) {
-        return 'C:\\Program Files (x86)\\Common Files\\Adobe\\CEP\\extensions';
+        return "C:\\Program Files (x86)\\Common Files\\Adobe\\CEP\\extensions";
     } else {
-        return '/Library/Application Support/Adobe/CEP/extensions';
+        return "/Library/Application Support/Adobe/CEP/extensions";
     }
 
 }
@@ -67,14 +69,15 @@ function resolveExtensionFolder() {
  *
  */
 function cleanTarget(target) {
-    utils.log_progress('cleaning target')
+    utils.log_progress("cleaning target");
 
     try {
-        if (fs.existsSync(target) && fs.lstatSync(target).isSymbolicLink())
+        if (fs.existsSync(target) && fs.lstatSync(target).isSymbolicLink()) {
             fs.unlinkSync(target)
-        utils.deleteFolderRecursive(target)
+        }
+        utils.deleteFolderRecursive(target);
     } catch (err) {
-        utils.log_progress(err, 'red')
+        utils.log_progress(err, "red");
     }
 }
 
@@ -84,31 +87,31 @@ function cleanTarget(target) {
  */
 function deployDevMode() {
     try {
-        utils.log_progress('patching')
-        execSync('defaults write com.adobe.CSXS.15 PlayerDebugMode 1', { stdio: [0, 1, 2] })
-        execSync('defaults write com.adobe.CSXS.14 PlayerDebugMode 1', { stdio: [0, 1, 2] })
-        execSync('defaults write com.adobe.CSXS.13 PlayerDebugMode 1', { stdio: [0, 1, 2] })
-        execSync('defaults write com.adobe.CSXS.12 PlayerDebugMode 1', { stdio: [0, 1, 2] })
-        execSync('defaults write com.adobe.CSXS.11 PlayerDebugMode 1', { stdio: [0, 1, 2] })
-        execSync('defaults write com.adobe.CSXS.10 PlayerDebugMode 1', { stdio: [0, 1, 2] })
-        execSync('defaults write com.adobe.CSXS.9 PlayerDebugMode 1', { stdio: [0, 1, 2] })
-        execSync('defaults write com.adobe.CSXS.8 PlayerDebugMode 1', { stdio: [0, 1, 2] })
-        execSync('defaults write com.adobe.CSXS.7 PlayerDebugMode 1', { stdio: [0, 1, 2] })
-        execSync('defaults write com.adobe.CSXS.6 PlayerDebugMode 1', { stdio: [0, 1, 2] })
-        execSync('defaults write com.adobe.CSXS.5 PlayerDebugMode 1', { stdio: [0, 1, 2] })
-        execSync('defaults write com.adobe.CSXS.4 PlayerDebugMode 1', { stdio: [0, 1, 2] })
+        utils.log_progress("patching");
+        execSync("defaults write com.adobe.CSXS.15 PlayerDebugMode 1", { stdio: [0, 1, 2] });
+        execSync("defaults write com.adobe.CSXS.14 PlayerDebugMode 1", { stdio: [0, 1, 2] });
+        execSync("defaults write com.adobe.CSXS.13 PlayerDebugMode 1", { stdio: [0, 1, 2] });
+        execSync("defaults write com.adobe.CSXS.12 PlayerDebugMode 1", { stdio: [0, 1, 2] });
+        execSync("defaults write com.adobe.CSXS.11 PlayerDebugMode 1", { stdio: [0, 1, 2] });
+        execSync("defaults write com.adobe.CSXS.10 PlayerDebugMode 1", { stdio: [0, 1, 2] });
+        execSync("defaults write com.adobe.CSXS.9 PlayerDebugMode 1", { stdio: [0, 1, 2] });
+        execSync("defaults write com.adobe.CSXS.8 PlayerDebugMode 1", { stdio: [0, 1, 2] });
+        execSync("defaults write com.adobe.CSXS.7 PlayerDebugMode 1", { stdio: [0, 1, 2] });
+        execSync("defaults write com.adobe.CSXS.6 PlayerDebugMode 1", { stdio: [0, 1, 2] });
+        execSync("defaults write com.adobe.CSXS.5 PlayerDebugMode 1", { stdio: [0, 1, 2] });
+        execSync("defaults write com.adobe.CSXS.4 PlayerDebugMode 1", { stdio: [0, 1, 2] });
 
     } catch (err) {
-        utils.log_progress(err, 'red')
+        utils.log_progress(err, "red");
     }
 
-    utils.log_progress('creating symlink into extensions folder')
+    utils.log_progress("creating symlink into extensions folder");
     try {
-        var type = isWindows ? 'junction' : 'dir'
+        var type = isWindows ? "junction" : "dir"
 
-        fs.symlinkSync(distFolder, resolvedTargetFolder, type)
+        fs.symlinkSync(distFolder, resolvedTargetFolder, type);
     } catch (err) {
-        utils.log_progress(err, 'red')
+        utils.log_progress(err, "red");
     }
 
 }
@@ -119,12 +122,12 @@ function deployDevMode() {
  */
 function deployProdMode() {
 
-    utils.log_progress('copying into extensions folder')
+    utils.log_progress("copying into extensions folder");
     try {
-        utils.copyRecursiveSync(distFolder, resolvedTargetFolder)
+        utils.copyRecursiveSync(distFolder, resolvedTargetFolder);
 
     } catch (err) {
-        utils.log_progress(err, 'red')
+        utils.log_progress(err, "red");
     }
 
 }

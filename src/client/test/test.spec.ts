@@ -1,12 +1,12 @@
 /* tslint:disable:only-arrow-functions */
 import { deepEqual, strictEqual } from "assert";
 import { describe, it } from "mocha";
-const rewire = require("rewire");
+import rewire from "rewire";
 
 const Store = rewire("../Stores/AppStore.tsx");
 
-describe("Store", function () {
-    describe("idToPath", function () {
+describe("Store", function() {
+    describe("idToPath", function() {
         interface Test { arg: string; want: string; }
         const tests: Test[] = [
             { arg: "some-thing", want: "some.thing" },
@@ -16,13 +16,13 @@ describe("Store", function () {
         ];
         const idToPath = Store.__get__("idToPath");
         for (const test of tests) {
-            it(`Should return "${test.want}", given "${test.arg}".`, function () {
+            it(`Should return "${test.want}", given "${test.arg}".`, function() {
                 const got = idToPath(test.arg);
                 strictEqual(got, test.want);
             });
         }
     });
-    describe("setKey", function () {
+    describe("setKey", function() {
         interface Test {
             arg: {
                 obj: object
@@ -40,7 +40,7 @@ describe("Store", function () {
         const idToPath = Store.__get__("idToPath");
         const setDeepValue = Store.__get__("setDeepValue");
         for (const test of tests) {
-            it(`Should return "${JSON.stringify(test.want)}", given "${JSON.stringify(test.arg)}".`, function () {
+            it(`Should return "${JSON.stringify(test.want)}", given "${JSON.stringify(test.arg)}".`, function() {
                 setDeepValue(test.arg.obj, idToPath(test.arg.key), test.arg.value);
                 const got = test.arg.obj;
                 deepEqual(got, test.want);

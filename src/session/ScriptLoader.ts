@@ -7,7 +7,7 @@ import { Logger } from "winston";
  * load jsx scripts dynamically
  */
 class ScriptLoader {
-    public readonly EvalScript_ErrMessage = "EvalScript error.";
+    public readonly EvalScriptError = "EvalScript error.";
     public cs: CSInterface;
     public logger: Logger;
     public nextID: number;
@@ -16,6 +16,11 @@ class ScriptLoader {
         this.cs = new CSInterface();
         this.logger = logger;
         this.nextID = 0;
+        // this.cs.evalScript("$._PPP_.registerProjectChangedFxn()");
+        this.cs.evalScript("$._PPP_.registerProjectChangedFxn()");
+        this.cs.addEventListener("com.adobe.csxs.events.WorkspaceChanged", function(event) {
+            alert(event.data);
+        });
     }
 
     public getID(): number {
@@ -61,9 +66,10 @@ class ScriptLoader {
         const that = this;
         const id = this.getID();
         return new Promise((resolve, reject) => {
-            const callback = function (result: any) {
+            that.logger.info(`calling: ${evalString}`, { source: that.name, id, success: true });
+            that.cs.evalScript(evalString, (result: any) => {
                 if (typeof result === "string") {
-                    if (result.toLowerCase().indexOf("error") != -1) {
+                    if (result.toLowerCase().indexOf("error") !== -1) {
                         that.log("err eval");
                         reject(that.createScriptError(result));
                         return;
@@ -73,10 +79,7 @@ class ScriptLoader {
                 that.logger.info(`result: ${result}`, { source: that.name, id, success: true });
                 resolve(result);
                 return;
-            };
-
-            that.logger.info(`calling: ${evalString}`, { source: that.name, id, success: true });
-            that.cs.evalScript(evalString, callback);
+            });
         });
 
     }
@@ -94,8 +97,7 @@ class ScriptLoader {
         console.log(`${this.name} ${val}`);
         this.logger.info(val, { source: this.name });
     }
-
-    get name() {
+    public get name() {
         return "ScriptLoader";
     }
 
