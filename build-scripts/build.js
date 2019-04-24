@@ -10,7 +10,7 @@ const utils = require('./utils.js')
 const webpack = require('webpack')
 const pluginConfig = require('../pluginrc.js')
 const env = utils.resolveEnv()
-const isDev = env==='development'
+const isDev = env === 'development'
 const distFolder = pluginConfig.destinationFolder
 const pluginFolder = path.join(distFolder, pluginConfig.extensionBundleId)
 const srcFolder = pluginConfig.sourceFolder
@@ -45,10 +45,10 @@ function build() {
         //   }));
         // });
 
-        execSync(`webpack --config ${webpack_client_config_path}  --display minimal --display-chunks --env.target=node --mode ${env}`, {stdio:[0,1,2]})
+        execSync(`webpack --config ${webpack_client_config_path} --display normal --display-chunks --env.target=node --mode ${env}`, { stdio: [0, 1, 2] })
         // bundle the session
         utils.log_progress('bundeling session...')
-        execSync(`webpack --config ${webpack_session_config_path} --display normal --display-chunks --env.target=node --mode ${env}`, {stdio:[0,1,2]})
+        execSync(`webpack --config ${webpack_session_config_path} --display normal --display-chunks --env.target=node --mode ${env}`, { stdio: [0, 1, 2] })
         // copy the host code
         utils.log_progress('copying host code...')
         utils.copyRecursiveSync(fromSrc('host'), fromPlugin('host'))
@@ -70,10 +70,11 @@ function build() {
         var manifest_template = require(path.join(templatesFolder, 'manifest.template.xml.js'))
         var rendered_xml = manifest_template(pluginConfig)
         var xml_out_file = path.join(pluginFolder, 'CSXS', 'manifest.xml')
+        fs.mkdirSync(path.dirname(xml_out_file))
         fs.writeFileSync(xml_out_file, rendered_xml, 'utf-8')
 
         // in dev, also render the .debug file template
-        if(isDev) {
+        if (isDev) {
             // render .debug file
             utils.log_progress('rendering .debug file ...')
             var debug_template = require(path.join(templatesFolder, '.debug.template.js'))
@@ -83,7 +84,7 @@ function build() {
         }
 
         utils.log_progress('DONE', 'blue')
-    } catch(err) {
+    } catch (err) {
         utils.log_progress(err, 'red')
     }
 }

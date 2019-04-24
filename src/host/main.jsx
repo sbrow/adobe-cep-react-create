@@ -9,13 +9,67 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-#include "./JSON.jsx"
+
+// tslint:disable-next-line: semicolon
+#include "./JSON.jsx";
 
 // alert(JSON.stringify(a))
 
 function test_host(obj_string) {
 	// alert(obj_string)
-	res = JSON.parse(obj_string)
+	res = JSON.parse(obj_string);
 	// alert(res)
-	return 'hola from extendscript ' + res.name
+	return "hola from extendscript " + res.name;
+}
+
+function listProjectItems(obj) {
+	var ret = [];
+
+	const children = app.project.rootItem.children;
+	for (var i = 0; i < children.numItems; i++) {
+		var child = children[i];
+		ret.push(child.name + ":" + child.type)
+	}
+	return ret;
+}
+
+function insertClips(clips) {
+    const project = app.project;
+    const lib = project.rootItem.children;
+    const inserted = 0;
+    try {
+        if (typeof clips === "string") {
+            clips = JSON.parse(clips);
+        }
+
+        var inTime = 0;
+        for (var i = 0; i < clips.length; i++) {
+            var clip = clips[i];
+            for (var j = 0; j < lib.numItems; j++) {
+                var child = lib[j];
+                if (child.name === clip) {
+                    inTime = insert(child, inTime);
+                    inserted++;
+                    break;
+                }
+            }
+        }
+    } catch (err) {
+        alert("error in insertClips: " + err)
+    }
+    return inserted;
+}
+
+function insert(clip, inTime) {
+    const project = app.project;
+    if (project.activeSequence === undefined) {
+        alert("There is no active sequence.");
+        return;
+    }
+    const sequence = project.activeSequence;
+    const video = sequence.videoTracks[0];
+    const outTime = inTime + Number(clip.getOutPoint().seconds);
+
+    video.insertClip(clip, inTime);
+    return outTime;
 }

@@ -1,3 +1,6 @@
+import { writeFileSync } from "fs";
+import { createLogger, format, transports } from "winston";
+
 /**
  * @author Tomer Riko Shalev
  */
@@ -9,6 +12,13 @@
  */
 export default class LogManager {
     _logs = []
+    _logger = createLogger({
+        level: "info",
+        format: format.cli(),
+        transports: [
+            new transports.File({ filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/winston.log" })
+        ]
+    })
 
     constructor() {
 
@@ -16,10 +26,11 @@ export default class LogManager {
 
     init() {
         this.log('initing...')
+        this._logger.info("Testing...")
 
         var log = console.log
 
-        if(console === undefined)
+        if (console === undefined)
             return
         var that = this
         // override the console.log method
@@ -31,7 +42,17 @@ export default class LogManager {
             // save the log internally
             that.addRawLog(...arguments)
         }
+    }
 
+    dump(path) {
+        try {
+            if (typeof path !== "string") {
+                throw new Error(`Error at dump(): path argument is not a string`)
+            }
+            writeFileSync(path, this.rawLogs.join("\r\n"))
+        } catch (error) {
+            window.alert(error)
+        }
     }
 
     /**

@@ -6,26 +6,25 @@ const distFolder = path.join(pluginConfig.destinationFolder, pluginConfig.extens
 const srcFolder = pluginConfig.sourceFolder
 const SESSION_DIST_PATH = path.join(distFolder, 'session-dist')
 const SESSION_SRC_PATH = path.join(srcFolder, 'session-src')
-const ENTRY_POINT_SESSION_PATH = path.join(SESSION_SRC_PATH, 'index.js')
+const ENTRY_POINT_SESSION_PATH = path.join(SESSION_SRC_PATH, 'index.ts')
 
 module.exports = (env) => ({
     entry: ENTRY_POINT_SESSION_PATH,
     target: 'node',
-    externals: [nodeExternals({modulesDir: path.join(SESSION_SRC_PATH, 'node_modules')})],
+    externals: [nodeExternals({ modulesDir: path.join(SESSION_SRC_PATH, 'node_modules') })],
     module: {
         rules: [
-        {
-            test: /\.(js|jsx)$/,
-            exclude: /node_modules/,
-            loader: "babel-loader",
-            options: {
-                presets: ['env', 'react', 'stage-2']
-            }
-
-        }]
+            {
+                test: /\.[jt]sx?$/,
+                exclude: /node_modules/,
+                loader: "babel-loader",
+                options: {
+                    plugins: ["@babel/plugin-proposal-class-properties"]
+                }
+            }]
     },
     resolve: {
-        extensions: ['*', '.js', '.jsx']
+        extensions: ['*', '.tsx', '.ts', '.jsx', '.js']
     },
     output: {
         path: SESSION_DIST_PATH,

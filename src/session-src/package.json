@@ -2,12 +2,14 @@
   "name": "session",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "mkdir -p node_modules"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {}
+  "dependencies": {
+    "winston": "^3.2.1"
+  }
 }
