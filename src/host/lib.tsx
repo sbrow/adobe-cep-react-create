@@ -82,21 +82,17 @@ function insertClips(clipNames: string | string[]): number {
     let inserted = 0;
     try {
         if (typeof clipNames === "string") {
-            clipNames = JSON.parse(clipNames);
+            clipNames = JSON.parse(clipNames.replace(/\\/g, "\\\\"));
         }
 
-        let inTime: number | undefined;
         if (lib !== undefined && clipNames instanceof Array) {
+            let inTime: number | undefined;
             for (const clipName of clipNames) {
-                for (let j = 0; j < lib.numItems; j++) {
-                    const child = lib[j];
-                    if (child.name === clipName && child.type === ProjectItemType.CLIP) {
-                        if (inTime !== null) {
-                            const clip = (child as Clip);
-                            inTime = insert(clip, inTime);
-                            inserted++;
-                            break;
-                        }
+                const clip = getProjectItemFromPath(clipName);
+                if (clipName.match(/[^\\]*$/g)[0] === clip.name && clip.type === ProjectItemType.CLIP) {
+                    if (inTime !== null) {
+                        inTime = insert((clip as Clip), inTime);
+                        inserted++;
                     }
                 }
             }

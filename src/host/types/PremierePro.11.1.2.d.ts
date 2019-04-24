@@ -119,6 +119,8 @@ declare class Sequence extends PremiereObject
      * Returns time of sequence's out point, in seconds.
      */
     getOutPoint(): string;
+
+	getSettings(): SequenceSettings;
     /**
      * Sets the in point of the sequence; '6.234'.
      */
