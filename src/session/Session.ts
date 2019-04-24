@@ -2,7 +2,7 @@
  * @author Tomer Riko Shalev
  */
 
-import ScriptLoader from "./ScriptLoader";
+import ScriptLoader from "./scriptLoader";
 
 import { createLogger, format, Logger, LoggerOptions, transports } from "winston";
 

@@ -1,16 +1,23 @@
 import * as React from "react";
 import controller from "../controller";
 import { StoreContext } from "../Stores/AppStore";
-import { NumberInputProps } from "../Types";
+
+interface NumberInputProps {
+    id: string;
+    label: string;
+    min?: number;
+    max?: number;
+}
 
 export function NumberInput(props: NumberInputProps): JSX.Element {
     const [state, dispatch] = React.useContext(StoreContext);
+    const source = NumberInput.name;
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         try {
             dispatch({ type: "set", source: "Dropdown", payload: { key: props.id, value: event.target.value } });
         } catch (error) {
-            controller.error(error, { source: "NumberInput" });
+            controller.error(error, { source });
         }
     };
     return (<div class="row">

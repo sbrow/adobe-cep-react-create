@@ -15,8 +15,7 @@ const localDir = path.join(root, "src", "dumped_types");
 try {
     console.log("dump requires admin privileges, you may need to enter your password.");
     const args = `"${glob(XMLFiles).join('" "')}" "${glob(XMLFiles2).join('" "').replace(/\$/g, "\\$")}"`;
-    execSync(`sudo extendscript-xml-to-typescript ${args}`);
-    console.log(glob(DTSFiles2));
+    shelljs.exec(`sudo extendscript-xml-to-typescript ${args}`);
     for (const filename of (glob(DTSFiles).concat(glob(DTSFiles2)))) {
         shelljs.cp(filename.replace(/\$/g, "\\$"), localDir);
     }

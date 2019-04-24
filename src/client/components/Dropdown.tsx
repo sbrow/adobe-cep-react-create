@@ -2,34 +2,22 @@ import { checkPropTypes } from "prop-types";
 import * as React from "react";
 import controller from "../controller";
 import { importOption, StoreContext } from "../Stores/AppStore";
-
-interface OptionProps {
-    value: string;
-    id?: string;
-}
-function Option(arg: OptionProps | string): JSX.Element {
-    let props;
-    if (typeof arg === "string") {
-        props = { value: arg };
-    } else {
-        props = arg;
-    }
-    return (<option {...props}>{props.value}</option>);
-}
+import { Option } from "./Option";
 
 interface DropdownProps {
-    label?: string;
-    options: any[] | string;
-    id: string;
-    parent?: any;
     allowEmpty?: boolean;
     allowImport?: boolean;
+    id: string;
+    label?: string;
+    options: any[] | string;
+    parent?: any;
 }
 
 /**
  * A Simple dropdown menu, connected to StoreContext.
  *
- * @param props
+ * @param {DropdownProps} props
+ * @returns {JSX.Element}
  */
 export function Dropdown(props: DropdownProps): JSX.Element {
     const [state, dispatch] = React.useContext(StoreContext);

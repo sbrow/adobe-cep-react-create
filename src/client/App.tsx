@@ -1,16 +1,15 @@
 import * as React from "react";
-// import { useState } from "react";
+import { AppStoreProvider } from "./components/AppStoreProvider";
 import { Form } from "./components/Form";
 import controller from "./controller";
-import { StoreProvider } from "./Stores/AppStore";
 
 export function App(props: { title?: string }) {
     document.title = props.title || "";
     return (
-        <div>
-            <StoreProvider>
+        <div id="app">
+            <AppStoreProvider>
                 <Form />
-            </StoreProvider>
+            </AppStoreProvider>
         </div>
     );
 }

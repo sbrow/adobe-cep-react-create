@@ -1,9 +1,32 @@
 import * as React from "react";
-import { createContext, useReducer } from "react";
+import { createContext } from "react";
 import controller from "../controller";
-import { BlockStore, IFormState, ProjectItemType, SetAction } from "../Types";
+import { BlockStore, IFormState, ProjectItemType, SetAction } from "../types";
 
 export const importOption = "Import new...";
+
+function idToPath(id: string) {
+    id = id.replace(/-/g, ".");
+    const elems = id.split(".");
+    for (let i = 0; i < elems.length; i++) {
+        const n = Number(elems[i]);
+        if (!isNaN(n)) {
+            elems[i] = `${n - 1}`;
+        }
+    }
+    return elems.join(".");
+}
+
+const initState: IFormState = {
+    bins: [],
+    blocks: [{
+        exercises: [],
+        intro: "",
+        rounds: 1,
+    }],
+    level: "",
+    numBlocks: 1,
+};
 
 export class AppStore {
     public availableVideos: SimpleProjectItem[];
@@ -15,14 +38,14 @@ export class AppStore {
     public blocks: BlockStore[];
     public outro: string;
 
-    constructor(init: IFormState) {
-        this.level = init.level;
-        this.numBlocks = init.numBlocks;
+    constructor(init: IFormState = initState) {
+        this.bins = init.bins || [];
+        this.blocks = init.blocks || [{ exercises: [], intro: "", rounds: 1 }];
+        this.level = init.level || "";
+        this.numBlocks = init.numBlocks || 1;
         this.intro = init.intro;
         this.warmup = init.warmup;
-        this.blocks = init.blocks;
         this.outro = init.outro;
-        this.bins = init.bins || [];
         this.availableVideos = init.availableVideos || [];
     }
 
@@ -52,7 +75,23 @@ export class AppStore {
      * @param {string} path a '.' delimited string.
      * @param {*} value
      */
-    public set(path: string, value: any) {
+    public set(path: string, value: any): void {
+        const setDeepValue = (obj: any, path: string, val: any): any => {
+            const source = "setDeepValue";
+            const args = { obj, path, val };
+            controller.debug(`${JSON.stringify(args)}`, { source });
+            const props = path.split(".");
+            const n = props.length - 1;
+            for (let i = 0; i < n; ++i) {
+                const key = (obj instanceof Array) ? `${Number(props[i])}` : props[i];
+                const next = (i + 1 != n) ? Number(props[i + 1]) : Number(null);
+                const defaultValue = (!(key in obj) && !isNaN(next)) ? [] : {};
+                obj = obj[key] = obj[key] || defaultValue;
+            }
+            obj[props[n]] = val;
+            controller.debug(`${JSON.stringify(obj)}`, { source });
+            return obj;
+        };
         setDeepValue(this, path, value);
     }
 
@@ -113,7 +152,6 @@ export class AppStore {
         } catch (e) {
             controller.error(JSON.stringify(e), { source: "state.videos" });
         }
-        // session.log(`videos: ${JSON.stringify(imports)}`);
         return imports;
     }
 
@@ -128,7 +166,6 @@ export class AppStore {
             /**
              * @todo verify paths before loading.
              */
-            // return window.session.run("alerts", "hello");
             const videos = this.videos();
             if (videos.length > 0) {
                 controller.info(`inserting ${JSON.stringify(videos)}`);
@@ -141,86 +178,13 @@ export class AppStore {
     }
 }
 
-function setDeepValue(obj: any, path: string, val: any): any {
-    const source = "setDeepValue";
-    const args = { obj, path, val };
-    controller.debug(`${JSON.stringify(args)}`, { source });
-    const props = path.split(".");
-    const n = props.length - 1;
-    for (let i = 0; i < n; ++i) {
-        const key = (obj instanceof Array) ? `${Number(props[i])}` : props[i];
-        const next = (i + 1 != n) ? Number(props[i + 1]) : Number(null);
-        const defaultValue = (!(key in obj) && !isNaN(next)) ? [] : {};
-        obj = obj[key] = obj[key] || defaultValue;
-    }
-    obj[props[n]] = val;
-    controller.debug(`${JSON.stringify(obj)}`, { source });
-    return obj;
-}
-
-function idToPath(id: string) {
-    id = id.replace(/-/g, ".");
-    const elems = id.split(".");
-    for (let i = 0; i < elems.length; i++) {
-        const n = Number(elems[i]);
-        if (!isNaN(n)) {
-            elems[i] = `${n - 1}`;
-        }
-    }
-    return elems.join(".");
-}
-
-/**
- * Handles actions for storeState
- *
- * @param {*} state
- * @param {*} action
- * @returns {*}
- */
-function reducer(state: AppStore, action: SetAction): AppStore {
-    controller.info(`recieved action: ${JSON.stringify(action)}`, { source: "reducer" });
-    if (action.type !== "set") {
-        throw new Error(`ActionType "${action.type}" not recognized`);
-    }
-
-    const newState = new AppStore({ ...state });
-    if (!(action.payload.value instanceof Array)) {
-        const n = Number(action.payload.value);
-
-        if (!isNaN(n) && action.payload.value !== "") {
-            action.payload.value = n;
-        }
-    }
-    newState.set(idToPath(action.payload.key), action.payload.value);
-    newState.updateBlocks();
-    return newState;
-}
-
-export const initState = new AppStore({
-    bins: [],
-    blocks: [{
-        exercises: [],
-        intro: "",
-        rounds: 1,
-    }],
-    level: "",
-    // @todo investigate.
-    // bins: getBins(),
-    numBlocks: 1,
-});
-
 export const StoreContext = createContext<[AppStore, React.Dispatch<SetAction>]>([
-    initState,
+    new AppStore(),
     () => { throw new Error("no reducer has been set"); },
 ]);
 
-export function StoreProvider({ children }: { children: any; }): JSX.Element {
-    const [state, dispatch] = useReducer(reducer, initState);
-    return (<StoreContext.Provider value={[state, dispatch]}>{children}</StoreContext.Provider>);
-}
-
 export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction>) {
-    const source = "Update";
+    const source = Update.name;
 
     async function updateBins(): Promise<boolean> {
         try {
@@ -262,11 +226,6 @@ export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction
         return false;
     }
 
-    async function importVideo(): Promise<string> {
-        const binName = (state.level === "") ? undefined : state.level;
-        return window.session.run("importVideo", binName);
-    }
-
     try {
         if (controller.hasSession()) {
             controller.debug("Updating", { source });
@@ -279,4 +238,28 @@ export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction
         controller.error(`Couldn't call run: ${error}`, { source });
     }
 
+}
+
+/**
+ * Handles actions for storeState
+ *
+ * @param {*} state
+ * @param {*} action
+ * @returns {*}
+ */
+export function reducer(state: AppStore, action: SetAction): AppStore {
+    controller.info(`recieved action: ${JSON.stringify(action)}`, { source: "reducer" });
+    if (action.type !== "set") {
+        throw new Error(`ActionType "${action.type}" not recognized`);
+    }
+    const newState = new AppStore({ ...state });
+    if (!(action.payload.value instanceof Array)) {
+        const n = Number(action.payload.value);
+        if (!isNaN(n) && action.payload.value !== "") {
+            action.payload.value = n;
+        }
+    }
+    newState.set(idToPath(action.payload.key), action.payload.value);
+    newState.updateBlocks();
+    return newState;
 }
