@@ -1,4 +1,5 @@
 import { execSync } from "child_process";
+import "json";
 import * as path from "path";
 import { destinationFolder, extensionBundleId } from "../pluginrc";
 // const path = require('path')
