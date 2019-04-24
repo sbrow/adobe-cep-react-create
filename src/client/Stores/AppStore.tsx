@@ -1,11 +1,13 @@
 import * as React from "react";
 import { createContext, useReducer } from "react";
+import { Session } from "../../session/src/Session";
 import controller from "../controller";
-import { Block, IFormState, SetAction } from "../Types";
+import { Block, IFormState, ProjectItemType, SetAction } from "../Types";
 
-const defaultOption = "Import new";
+export const importOption = "Import new...";
 
 export class AppStore {
+    public availableVideos: string[];
     public level: string;
     public numBlocks: number;
     public library: string[];
@@ -22,6 +24,7 @@ export class AppStore {
         this.blocks = init.blocks;
         this.outro = init.outro;
         this.library = init.library || [];
+        this.availableVideos = init.availableVideos || ["", importOption];
     }
 
     /**
@@ -36,7 +39,8 @@ export class AppStore {
                 ret = ret[prop];
             } else {
                 const e = new Error(`"${key}" not in "${JSON.stringify(this)}"`);
-                controller.log("error", e.message, { stack: e.stack.split("\n") });
+                const stack = (e.stack !== undefined) ? e.stack.split("\n") : "";
+                controller.error(e.message, { stack });
                 return undefined;
             }
         }
@@ -52,14 +56,6 @@ export class AppStore {
     public set(path: string, value: any) {
         setDeepValue(this, path, value);
     }
-
-    public get availableVideos(): string[] {
-        const videos: string[] = [""];
-        // defer
-        videos.push(defaultOption);
-        return videos;
-    }
-
     /**
      * Adjusts the length of state.blocks to match state.numBlocks.
      *
@@ -72,22 +68,6 @@ export class AppStore {
             } else {
                 this.blocks.pop();
             }
-        }
-    }
-
-    public updateLibrary(): void {
-        const fresh = getBins();
-        if (fresh !== undefined && fresh !== this.library) {
-            controller.info(`${JSON.stringify(this.library)} !== ${JSON.stringify(fresh)}, updating...`);
-            const action = {
-                type: "set",
-                source: "UpdateLibrary",
-                payload: {
-                    key: "library",
-                    value: fresh,
-                },
-            };
-            reducer(this, action);
         }
     }
 
@@ -115,7 +95,7 @@ export class AppStore {
             push(this.intro, this.warmup);
             this.blocks.forEach((block) => {
                 push(block.intro);
-                if ("warmup" in block) {
+                if (block.warmup !== undefined) {
                     push(block.warmup);
                 }
                 if (block.exercises !== undefined) {
@@ -160,7 +140,7 @@ function setDeepValue(obj: object, path: string, val: any) {
     const n = props.length - 1;
     for (let i = 0; i < n; ++i) {
         const key = (obj instanceof Array) ? `${Number(props[i])}` : props[i];
-        const next = (i + 1 != n) ? Number(props[i + 1]) : null;
+        const next = (i + 1 != n) ? Number(props[i + 1]) : Number(null);
         const _default = (!(key in obj) && !isNaN(next)) ? [] : {};
         obj = obj[key] = obj[key] || _default;
     }
@@ -189,7 +169,7 @@ function idToPath(id: string) {
  * @returns {*}
  */
 function reducer(state: AppStore, action: SetAction): AppStore {
-    controller.info(`recieved action: ${JSON.stringify(action)}`);
+    controller.info(`recieved action: ${JSON.stringify(action)}`, { source: "reducer" });
     if (action.type !== "set") {
         throw new Error(`ActionType "${action.type}" not recognized`);
     }
@@ -202,38 +182,35 @@ function reducer(state: AppStore, action: SetAction): AppStore {
             action.payload.value = n;
         }
     }
-    if (action.payload.value === defaultOption) {
-        window.session.run("importVideo", newState.level)
-            .then((success) => {
-                return reducer(newState, { type: "set", payload: { key: action.payload.key, value: "" } });
+    if (action.payload.value === importOption) {
+        const binName = (newState.level === "") ? undefined : newState.level;
+        (window.session as Session).run("importVideo", binName).then((clipName) => {
+            controller.info(`getting ${JSON.stringify(clipName)}`, { source: "reducer" });
+
+            (window.session as Session).run("listProjectItemsJSON", binName).then((projectItems) => {
+                const videos: string[] = [""];
+                for (const item of projectItems) {
+                    videos.push(item.name);
+                }
+                videos.push(importOption);
+                newState.availableVideos = videos;
+                const i = newState.availableVideos.indexOf(clipName);
+                const max = (a: number, b: number) => (a > b) ? a : b;
+                newState.set(idToPath(action.payload.key), newState.availableVideos[max(i, 0)]);
             });
+        });
     } else {
         newState.set(idToPath(action.payload.key), action.payload.value);
     }
     newState.updateBlocks();
-    if (action.payload.key !== "library") {
-        newState.updateLibrary();
-    }
     return newState;
 }
 
-function getBins(): string[] {
-    try {
-        if (controller.hasSession()) {
-            window.session.run("getBins").then((result: any) => {
-                return result;
-            }).catch((error: Error) => {
-                controller.error(`failed with: ${JSON.stringify(error)}`, { source: "getBins" });
-                return [];
-            });
-        }
-    } catch (error) {
-        controller.error(`Couldn't call run: ${JSON.stringify(error)}`, { source: "getBins" });
-        return [];
-    }
-}
 export const initState = new AppStore({
-    blocks: [{}],
+    blocks: [{
+        intro: "",
+        excercises: ["", ""],
+    }],
     level: "",
     numBlocks: 1,
     // @todo investigate.

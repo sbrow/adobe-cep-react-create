@@ -10,10 +10,18 @@ class ScriptLoader {
     public readonly EvalScript_ErrMessage = "EvalScript error.";
     public cs: CSInterface;
     public logger: Logger;
+    public nextID: number;
 
     constructor(logger: Logger) {
         this.cs = new CSInterface();
         this.logger = logger;
+        this.nextID = 0;
+    }
+
+    public getID(): number {
+        const id = this.nextID;
+        this.nextID++;
+        return id;
     }
 
     /**
@@ -47,30 +55,30 @@ class ScriptLoader {
      * @param  {any} params the params object
      * @return {Promise} a promise
      */
-    public async evalScript(functionName: string, params: any): Promise<any> {
-        const paramsString = this.stringify(params);
-        const evalString = `${functionName}('${paramsString}')`;
+    public async evalScript(functionName: string, params?: any): Promise<any> {
+        const paramsString = (params === undefined) ? "" : `'${this.stringify(params)}'`;
+        const evalString = `${functionName}(${paramsString})`;
         const that = this;
+        const id = this.getID();
 
         return new Promise((resolve, reject) => {
-            const callback = function (eval_res: any) {
+            const callback = function (result: any) {
                 // console.log('weird' + eval_res)
-                if (typeof eval_res === "string") {
+                if (typeof result === "string") {
                     // console.log(eval_res)
-                    if (eval_res.toLowerCase().indexOf("error") != -1) {
+                    if (result.toLowerCase().indexOf("error") != -1) {
                         that.log("err eval");
-                        reject(that.createScriptError(eval_res));
+                        reject(that.createScriptError(result));
                         return;
                     }
                 }
 
-                that.log("success eval");
-
-                resolve(eval_res);
-
+                that.logger.info(`result: ${result}`, { source: that.name, id, success: true });
+                resolve(result);
                 return;
             };
 
+            that.logger.info(`calling: ${evalString}`, { source: that.name, id, success: true });
             that.cs.evalScript(evalString, callback);
         });
 

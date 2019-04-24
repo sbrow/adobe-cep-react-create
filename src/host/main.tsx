@@ -35,39 +35,46 @@ function getProjectItem(name: string, entrypoint?: ProjectItem): ProjectItem | n
     }
     return null;
 }
+
 /**
  * Imports a video into bin `binName` and returns the name of the imported file.
  *
  * @param {string} binName The name of the bin to import into
  * @returns {string} The name of the imported file.
  */
-function importVideo(binName: string): boolean {
+function importVideo(binName?: string): string {
     const project = app.project;
+    // app.project.rootItem.select();
     const prevBin = project.getInsertionBin();
-    const bin = getProjectItem(binName);
+    const bin = (binName === undefined) ? null : getProjectItem(binName);
     if (bin !== null) {
         bin.select();
     }
 
-    let file = File.openDialog("Select file").toString();
-    // TODO: Fix this.
-    file = file.replace(/^~/, "/Users/sbrow");
+    const file = File.openDialog("Select file");
+    if (file !== null) {
+        const filename = file.toString().replace(/^~/, "/Users/sbrow");
+        const success = project.importFiles([filename], false);
+        if (prevBin !== null) {
+            prevBin.select();
+        }
 
-    const success = project.importFiles([file], false);
-    if (prevBin !== null) {
-        prevBin.select();
+        if (success) {
+            const searchBin = (bin === null) ? undefined : bin;
+            const newItemName = filename.match(/(.*\/)([^\/]*)/)[2];
+            const newItem = getProjectItem(newItemName, searchBin);
+            if (newItem !== null) {
+                return JSON.stringify(newItem.name);
+            }
+        }
     }
-
-    /*     if (success) {
-            const newItem = getProjectItem("");
-        } */
-    return success;
+    return "";
 }
 
 /**
  * @returns {string} a JSONString Array of all top level bins.
  */
-function getBins() {
+function getBins(): string {
     const items = listProjectItems() || [];
     const bins = [];
 
@@ -79,26 +86,43 @@ function getBins() {
     return JSON.stringify(bins);
 }
 
-function listProjectItems(): Array<{ name: string, type: number }> | null {
+function listProjectItems(entrypoint?: ProjectItem | string): Array<{ name: string, type: number }> | null {
     try {
         const ret: Array<{ name: string, type: number }> = [];
 
-        const children = app.project.rootItem.children;
-        if (children === undefined) {
-            return [];
-        }
-        for (let i = 0; i < children.numItems; i++) {
-            const child = children[i];
-            ret.push({
-                name: child.name,
-                type: child.type,
-            });
+        const getEntry = (pt: ProjectItem | string | undefined) => {
+            switch (typeof pt) {
+                case "undefined":
+                    return app.project.rootItem;
+                case "string":
+                    return getProjectItem(pt);
+                default:
+                    return pt;
+            }
+        };
+        const entry = getEntry(entrypoint);
+
+        if (entry !== null) {
+            const children = entry.children;
+            if (children !== undefined) {
+                for (let i = 0; i < children.numItems; i++) {
+                    const child = children[i];
+                    ret.push({
+                        name: child.name,
+                        type: child.type,
+                    });
+                }
+            }
         }
         return ret;
     } catch (err) {
         alert("list returned " + err);
     }
     return null;
+}
+
+function listProjectItemsJSON(entrypoint?: ProjectItem | string): JSONString {
+    return JSON.stringify(listProjectItems(entrypoint));
 }
 
 /**

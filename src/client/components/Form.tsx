@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useContext } from "react";
 import controller from "../controller";
-import { StoreContext, StoreProvider } from "../Stores/AppStore";
+import { importOption, StoreContext, StoreProvider } from "../Stores/AppStore";
 import { Blocks } from "./Blocks";
 import { Dropdown } from "./Dropdown";
 import { PathBox } from "./PathBox";
@@ -35,9 +35,24 @@ function Refresh(): JSX.Element {
         try {
             if (controller.hasSession()) {
                 const functionName = "getBins";
+                const source = "Refresh";
                 const args = null;
                 window.session.run(functionName, args).then((result: any) => {
-                    dispatch({ type: "set", source: "Refresh", payload: { key: "library", value: result } });
+                    dispatch({ type: "set", source, payload: { key: "library", value: ["", ...result] } });
+                }).catch((error: Error) => {
+                    controller.error(`run "${functionName}" failed with: "${error.message}"`, { args, stack: error.stack });
+                });
+                const level = (state.level === "") ? undefined : state.level;
+                (window.session as Session).run("listProjectItemsJSON", level).then((result) => {
+                    controller.debug(`result: ${JSON.stringify(result)}`, { source });
+                    const value: string[] = [""];
+                    if (result !== null) {
+                        for (const item of result) {
+                            value.push(item.name);
+                        }
+                    }
+                    value.push(importOption);
+                    dispatch({ type: "set", source, payload: { key: "availableVideos", value } });
                 }).catch((error: Error) => {
                     controller.error(`run "${functionName}" failed with: "${error.message}"`, { args, stack: error.stack });
                 });
@@ -80,7 +95,7 @@ export function Form(): JSX.Element {
                 <h2>Intro</h2>
                 <Dropdown id="level" label="Workout Level" options="library" />
                 <Dropdown id="numBlocks" label="# of Blocks" options={numBlocks} />
-                <Dropdown id="intro" label="Intro" options={state.availableVideos} />
+                <Dropdown id="intro" label="Intro" options="availableVideos" />
                 <PathBox id="warmup" label="warmup" />
                 <h2>Blocks</h2>
                 <Blocks />
