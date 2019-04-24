@@ -391,8 +391,11 @@ declare class ScreenObject extends Object {
  * Represents a file in the local file system in a platform-independent manner.
  */
 declare class File extends Object {
+    static openDialog(label: string): any
     // TODO: Fill this in.
 }
+
+declare function alert(message: any): void;
 
 /**
  * Wraps XML into an object.

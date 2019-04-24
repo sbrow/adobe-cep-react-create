@@ -2,7 +2,7 @@ export interface Action {
     type: string;
 }
 export interface IFormState {
-    level: number;
+    level: string;
     numBlocks: number;
     [key: string]: any;
     blocks: any[];
@@ -10,7 +10,7 @@ export interface IFormState {
 }
 export interface SetAction extends Action {
     type: "set";
-    source: string,
+    source: string;
     payload: {
         key: string,
         value: any,

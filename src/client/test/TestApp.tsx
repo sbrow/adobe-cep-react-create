@@ -11,11 +11,11 @@ function run(fnName: string, args?: any): void {
         session.scriptLoader().evalScript(fnName, args).then((res) => {
             this.log("succeeded.");
             if (res !== undefined) {
-                window.alert(`Returned: '${res}'`);
+                controller.info(`Returned: '${res}'`, { source: "TestApp.run" });
             }
         });
     } catch (e) {
-        window.alert(e);
+        controller.error(`${e}`, { source: "TestApp.run" });
     }
 }
 

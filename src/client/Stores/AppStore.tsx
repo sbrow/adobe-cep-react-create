@@ -3,8 +3,10 @@ import { createContext, useReducer } from "react";
 import controller from "../controller";
 import { Block, IFormState, SetAction } from "../Types";
 
+const defaultOption = "Import new";
+
 export class AppStore {
-    public level: number;
+    public level: string;
     public numBlocks: number;
     public library: string[];
     public intro: string;
@@ -33,10 +35,8 @@ export class AppStore {
             if (prop in ret) {
                 ret = ret[prop];
             } else {
-                if ("session" in window) {
-                    const e = new Error(`"${key}" not in "${JSON.stringify(this)}"`);
-                    window.session.logger.log("error", e.message, { stack: e.stack.split("\n") });
-                }
+                const e = new Error(`"${key}" not in "${JSON.stringify(this)}"`);
+                controller.log("error", e.message, { stack: e.stack.split("\n") });
                 return undefined;
             }
         }
@@ -51,6 +51,13 @@ export class AppStore {
      */
     public set(path: string, value: any) {
         setDeepValue(this, path, value);
+    }
+
+    public get availableVideos(): string[] {
+        const videos: string[] = [""];
+        // defer
+        videos.push(defaultOption);
+        return videos;
     }
 
     /**
@@ -68,7 +75,7 @@ export class AppStore {
         }
     }
 
-    public updateLibrary() {
+    public updateLibrary(): void {
         const fresh = getBins();
         if (fresh !== undefined && fresh !== this.library) {
             controller.info(`${JSON.stringify(this.library)} !== ${JSON.stringify(fresh)}, updating...`);
@@ -116,7 +123,7 @@ export class AppStore {
                 }
             });
         } catch (e) {
-            window.alert(JSON.stringify(e));
+            controller.error(JSON.stringify(e), { source: "state.videos" });
         }
         // session.log(`videos: ${JSON.stringify(imports)}`);
         return imports;
@@ -136,11 +143,11 @@ export class AppStore {
             // return window.session.run("alerts", "hello");
             const videos = this.videos();
             if (videos.length > 0) {
-                window.alert(`inserting ${JSON.stringify(videos)}`);
+                controller.info(`inserting ${JSON.stringify(videos)}`);
                 return window.session.run("insertClips", videos);
             }
         } catch (e) {
-            window.alert(`error on insert: ${e}`);
+            controller.error(`${e}`, { source: "AppStore.insert" });
         }
         return false;
     }
@@ -182,9 +189,9 @@ function idToPath(id: string) {
  * @returns {*}
  */
 function reducer(state: AppStore, action: SetAction): AppStore {
-    window.session.logger.info(`recieved action: ${JSON.stringify(action)}`);
+    controller.info(`recieved action: ${JSON.stringify(action)}`);
     if (action.type !== "set") {
-        throw new Error(`; Type; "${action.type}"; not; recognized`);
+        throw new Error(`ActionType "${action.type}" not recognized`);
     }
 
     const newState = new AppStore({ ...state });
@@ -195,37 +202,43 @@ function reducer(state: AppStore, action: SetAction): AppStore {
             action.payload.value = n;
         }
     }
-    newState.set(idToPath(action.payload.key), action.payload.value);
+    if (action.payload.value === defaultOption) {
+        window.session.run("importVideo", newState.level)
+            .then((success) => {
+                return reducer(newState, { type: "set", payload: { key: action.payload.key, value: "" } });
+            });
+    } else {
+        newState.set(idToPath(action.payload.key), action.payload.value);
+    }
     newState.updateBlocks();
     if (action.payload.key !== "library") {
         newState.updateLibrary();
     }
-
     return newState;
 }
 
 function getBins(): string[] {
     try {
         if (controller.hasSession()) {
-            window.session.run("getBins", null).then((res: string) => {
-                return JSON.parse(res);
-            }).catch((error) => {
-                window.alert(`run failed with: ${error}`);
+            window.session.run("getBins").then((result: any) => {
+                return result;
+            }).catch((error: Error) => {
+                controller.error(`failed with: ${JSON.stringify(error)}`, { source: "getBins" });
                 return [];
             });
         }
     } catch (error) {
-        window.alert(`Couldn't call run: ${error}`);
-        window.alert(controller.logz.join("\r\n"));
+        controller.error(`Couldn't call run: ${JSON.stringify(error)}`, { source: "getBins" });
         return [];
     }
 }
 export const initState = new AppStore({
     blocks: [{}],
-    level: 1,
+    level: "",
     numBlocks: 1,
+    // @todo investigate.
     // library: getBins(),
-    library: [],
+    library: [""],
 });
 
 export const StoreContext = createContext<[AppStore, React.Dispatch<SetAction>]>([

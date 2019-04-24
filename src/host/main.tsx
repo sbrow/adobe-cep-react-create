@@ -11,17 +11,67 @@ governing permissions and limitations under the License.
 */
 // @include "./JSON.jsx"
 
+// TODO: move to `test.jsx`.
 function test_host(jsonString: JSONString) {
-    let res = JSON.parse(jsonString);
+    const res = JSON.parse(jsonString);
     return `hola from extendscript "${res.name}"`;
 }
 
-function getBins() {
-    const items = JSON.parse(listProjectItems() || "[]");
-    var bins = [];
+function getProjectItem(name: string, entrypoint?: ProjectItem): ProjectItem | null {
+    try {
+        const entry = entrypoint || app.project.rootItem;
+        const children = entry.children;
+        if (children === undefined) {
+            return null;
+        }
+        for (let i = 0; i < children.numItems; i++) {
+            const child = children[i];
+            if (child.name === name) {
+                return child;
+            }
+        }
+    } catch (error) {
+        alert(`list returned ${error}`);
+    }
+    return null;
+}
+/**
+ * Imports a video into bin `binName` and returns the name of the imported file.
+ *
+ * @param {string} binName The name of the bin to import into
+ * @returns {string} The name of the imported file.
+ */
+function importVideo(binName: string): boolean {
+    const project = app.project;
+    const prevBin = project.getInsertionBin();
+    const bin = getProjectItem(binName);
+    if (bin !== null) {
+        bin.select();
+    }
 
-    for (var i = 0; i < items.length; i++) {
-        var item = items[i];
+    let file = File.openDialog("Select file").toString();
+    // TODO: Fix this.
+    file = file.replace(/^~/, "/Users/sbrow");
+
+    const success = project.importFiles([file], false);
+    if (prevBin !== null) {
+        prevBin.select();
+    }
+
+    /*     if (success) {
+            const newItem = getProjectItem("");
+        } */
+    return success;
+}
+
+/**
+ * @returns {string} a JSONString Array of all top level bins.
+ */
+function getBins() {
+    const items = listProjectItems() || [];
+    const bins = [];
+
+    for (const item of items) {
         if (item.type === 2) {
             bins.push(item.name);
         }
@@ -29,32 +79,31 @@ function getBins() {
     return JSON.stringify(bins);
 }
 
-
-function listProjectItems(): string | null {
+function listProjectItems(): Array<{ name: string, type: number }> | null {
     try {
-        var ret: { name: string, type: number }[] = [];
+        const ret: Array<{ name: string, type: number }> = [];
 
         const children = app.project.rootItem.children;
         if (children === undefined) {
-            return "[]";
+            return [];
         }
-        for (var i = 0; i < children.numItems; i++) {
-            var child = children[i];
+        for (let i = 0; i < children.numItems; i++) {
+            const child = children[i];
             ret.push({
                 name: child.name,
-                type: child.type
-            })
+                type: child.type,
+            });
         }
-        return JSON.stringify(ret);
+        return ret;
     } catch (err) {
-        alert("list returned " + err)
+        alert("list returned " + err);
     }
-    return null
+    return null;
 }
 
 /**
- * 
- * @returns the number of clips inserted. 
+ *
+ * @returns the number of clips inserted.
  */
 function insertClips(clips: string | string[]): number {
     const project = app.project;
@@ -65,11 +114,11 @@ function insertClips(clips: string | string[]): number {
             clips = JSON.parse(clips);
         }
 
-        var inTime: number | null = 0;
+        let inTime: number | null = 0;
         if (lib !== undefined && clips instanceof Array) {
             for (const clipName of clips) {
-                for (var j = 0; j < lib.numItems; j++) {
-                    let child = lib[j];
+                for (let j = 0; j < lib.numItems; j++) {
+                    const child = lib[j];
                     if (child.name === clipName && child.type === ProjectItemType.CLIP) {
                         if (inTime !== null) {
                             const clip = child as Clip;
@@ -82,7 +131,7 @@ function insertClips(clips: string | string[]): number {
             }
         }
     } catch (err) {
-        alert("error in insertClips: " + err)
+        alert("error in insertClips: " + err);
     }
     return inserted;
 }
@@ -96,7 +145,7 @@ function insertClips(clips: string | string[]): number {
  */
 function insert(clip: Clip, inTime: number): number | null {
     if (clip.type !== ProjectItemType.CLIP) {
-        alert("Attempted to insert a ProjectItem that is not a clip.")
+        alert("Attempted to insert a ProjectItem that is not a clip.");
         return null;
     }
 
@@ -110,6 +159,6 @@ function insert(clip: Clip, inTime: number): number | null {
 
     video.insertClip(clip, inTime);
 
-    let time = inTime + clip.getOutPoint().seconds;
+    const time = inTime + clip.getOutPoint().seconds;
     return Number(time);
 }
