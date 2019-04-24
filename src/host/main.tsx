@@ -43,30 +43,35 @@ function getProjectItem(name: string, entrypoint?: ProjectItem): ProjectItem | n
  * @returns {string} The name of the imported file.
  */
 function importVideo(binName?: string): string {
-    const project = app.project;
-    // app.project.rootItem.select();
-    const prevBin = project.getInsertionBin();
-    const bin = (binName === undefined) ? null : getProjectItem(binName);
-    if (bin !== null) {
-        bin.select();
-    }
-
-    const file = File.openDialog("Select file");
-    if (file !== null) {
-        const filename = file.toString().replace(/^~/, "/Users/sbrow");
-        const success = project.importFiles([filename], false);
-        if (prevBin !== null) {
-            prevBin.select();
+    try {
+        const project = app.project;
+        // app.project.rootItem.select();
+        const prevBin = project.getInsertionBin();
+        const bin = (binName === undefined) ? null : getProjectItem(binName);
+        if (bin !== null) {
+            bin.select();
         }
 
-        if (success) {
-            const searchBin = (bin === null) ? undefined : bin;
-            const newItemName = filename.match(/(.*\/)([^\/]*)/)[2];
-            const newItem = getProjectItem(newItemName, searchBin);
-            if (newItem !== null) {
-                return JSON.stringify(newItem.name);
+        const file = File.openDialog("Select file");
+        if (file !== null) {
+            const filename = file.fsName;
+            const success = project.importFiles([filename], false);
+            if (prevBin !== null) {
+                // prevBin.select();
+            }
+            if (success) {
+                const searchBin = (bin === null) ? undefined : bin;
+                const newItemName = file.name;
+                alert(JSON.stringify({ name: newItemName }));
+                const newItem = getProjectItem(newItemName, searchBin);
+                alert(newItem);
+                if (newItem !== null) {
+                    return JSON.stringify(newItem.name);
+                }
             }
         }
+    } catch (error) {
+        alert(error);
     }
     return "";
 }
@@ -185,4 +190,9 @@ function insert(clip: Clip, inTime: number): number | null {
 
     const time = inTime + clip.getOutPoint().seconds;
     return Number(time);
+}
+
+function Home(): string {
+    // return $.getEnv("HOME");
+    return JSON.stringify($.toSource());
 }

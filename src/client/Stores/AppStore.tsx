@@ -1,6 +1,5 @@
 import * as React from "react";
 import { createContext, useReducer } from "react";
-import { Session } from "../../session/src/Session";
 import controller from "../controller";
 import { Block, IFormState, ProjectItemType, SetAction } from "../Types";
 
@@ -56,6 +55,7 @@ export class AppStore {
     public set(path: string, value: any) {
         setDeepValue(this, path, value);
     }
+
     /**
      * Adjusts the length of state.blocks to match state.numBlocks.
      *
@@ -133,19 +133,20 @@ export class AppStore {
     }
 }
 
-function setDeepValue(obj: object, path: string, val: any) {
+function setDeepValue(obj: any, path: string, val: any): any {
+    const source = "setDeepValue";
     const args = { obj, path, val };
-    controller.debug(`${JSON.stringify(args)}`);
+    controller.debug(`${JSON.stringify(args)}`, { source });
     const props = path.split(".");
     const n = props.length - 1;
     for (let i = 0; i < n; ++i) {
         const key = (obj instanceof Array) ? `${Number(props[i])}` : props[i];
         const next = (i + 1 != n) ? Number(props[i + 1]) : Number(null);
-        const _default = (!(key in obj) && !isNaN(next)) ? [] : {};
-        obj = obj[key] = obj[key] || _default;
+        const defaultValue = (!(key in obj) && !isNaN(next)) ? [] : {};
+        obj = obj[key] = obj[key] || defaultValue;
     }
     obj[props[n]] = val;
-    controller.debug(`${JSON.stringify(obj)}`);
+    controller.debug(`${JSON.stringify(obj)}`, { source });
     return obj;
 }
 
@@ -182,40 +183,21 @@ function reducer(state: AppStore, action: SetAction): AppStore {
             action.payload.value = n;
         }
     }
-    if (action.payload.value === importOption) {
-        const binName = (newState.level === "") ? undefined : newState.level;
-        (window.session as Session).run("importVideo", binName).then((clipName) => {
-            controller.info(`getting ${JSON.stringify(clipName)}`, { source: "reducer" });
-
-            (window.session as Session).run("listProjectItemsJSON", binName).then((projectItems) => {
-                const videos: string[] = [""];
-                for (const item of projectItems) {
-                    videos.push(item.name);
-                }
-                videos.push(importOption);
-                newState.availableVideos = videos;
-                const i = newState.availableVideos.indexOf(clipName);
-                const max = (a: number, b: number) => (a > b) ? a : b;
-                newState.set(idToPath(action.payload.key), newState.availableVideos[max(i, 0)]);
-            });
-        });
-    } else {
-        newState.set(idToPath(action.payload.key), action.payload.value);
-    }
+    newState.set(idToPath(action.payload.key), action.payload.value);
     newState.updateBlocks();
     return newState;
 }
 
 export const initState = new AppStore({
     blocks: [{
-        intro: "",
         excercises: ["", ""],
+        intro: "",
     }],
     level: "",
+    library: [""],
     numBlocks: 1,
     // @todo investigate.
     // library: getBins(),
-    library: [""],
 });
 
 export const StoreContext = createContext<[AppStore, React.Dispatch<SetAction>]>([
@@ -226,4 +208,73 @@ export const StoreContext = createContext<[AppStore, React.Dispatch<SetAction>]>
 export function StoreProvider({ children }: { children: any; }): JSX.Element {
     const [state, dispatch] = useReducer(reducer, initState);
     return (<StoreContext.Provider value={[state, dispatch]}>{children}</StoreContext.Provider>);
+}
+
+export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction>) {
+    const source = "Update";
+
+    async function updateBins(): Promise<boolean> {
+        try {
+            const functionName = "getBins";
+            // controller.info("Waiting for bins...", { source });
+            let bins = await window.session.run(functionName);
+            // controller.info("Bins received.", { source });
+            bins = ["", ...bins];
+            if (bins !== state.library) {
+                dispatch({ type: "set", source, payload: { key: "library", value: bins } });
+                return true;
+            }
+        } catch (error) {
+            controller.error(`Couldn't call run: ${error}`, { source });
+        }
+        return false;
+    }
+
+    async function updateAvail(): Promise<boolean> {
+        try {
+            const binName = (state.level === "") ? undefined : state.level;
+            const projectItems: Array<{ name: string, type: number }> = await window.session.run("listProjectItemsJSON", binName);
+            const videos: string[] = [""];
+            for (const item of projectItems) {
+                if (item.type === ProjectItemType.Clip) {
+                    videos.push(item.name);
+                }
+            }
+            videos.push(importOption);
+            if (state.availableVideos !== videos) {
+                dispatch({ type: "set", source, payload: { key: "availableVideos", value: videos } });
+                return true;
+            }
+            // const i = newState.availableVideos.indexOf(clipName);
+            // const max = (a: number, b: number) => (a > b) ? a : b;
+            // newState.set(idToPath(action.payload.key), newState.availableVideos[max(i, 0)]);
+        } catch (error) {
+            controller.error(`Couldn't call run: ${error}`, { source });
+        }
+        return false;
+    }
+
+    async function importVideo(): Promise<string> {
+        const binName = (state.level === "") ? undefined : state.level;
+        return window.session.run("importVideo", binName);
+    }
+
+    try {
+        if (controller.hasSession()) {
+            await updateBins();
+            let clipName;
+            if (state.intro === importOption) {
+                clipName = await importVideo();
+            }
+            await updateAvail();
+            if (typeof clipName === "string") {
+                dispatch({ type: "set", source, payload: { key: "intro", value: clipName } });
+            }
+        } else {
+            window.alert("Window does not have session.");
+        }
+    } catch (error) {
+        controller.error(`Couldn't call run: ${error}`, { source });
+    }
+
 }

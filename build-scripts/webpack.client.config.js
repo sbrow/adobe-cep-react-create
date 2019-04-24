@@ -18,9 +18,16 @@ module.exports = ({
                 test: /\.[tj]sx?$/,
                 exclude: /node_modules/,
                 loader: "babel-loader",
-                // options: {
-                // plugins: ["@babel/plugin-proposal-class-properties"],
-                // }
+                options: {
+                    presets: [
+                        "@babel/preset-env",
+                        "@babel/typescript",
+                        "@babel/preset-react",
+                    ],
+                    plugins: [
+                        "@babel/plugin-proposal-class-properties",
+                    ],
+                },
             },
             {
                 test: /\.(woff|woff2|eot|ttf|svg)$/,

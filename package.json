@@ -1,6 +1,6 @@
 {
   "name": "workout-builder",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": "Spencer Brower",
   "contributors": [
     "Tomer Riko Shalev"
@@ -24,8 +24,10 @@
     "babel": "babel ./client/js --out-dir ./client/out",
     "test": "ts-mocha -r jsdom-global/register -p ./src/client/tsconfig.json ./src/client/test/test.spec.ts",
     "make": "ts-node ./build-scripts/make.ts",
-    "clean": "npm run clean:logs",
-    "clean:logs": "rm -f ./logs/*",
+    "watch:client": "webpack --config ./build-scripts/webpack.client.config.js --mode development --watch --display minimal",
+    "watch:session": "webpack --config ./build-scripts/webpack.session.config.js --mode development --watch --display minimal",
+    "watch": "concurrently \"npm run build:jsx -- -w\" \"npm run watch:client\" \"npm run watch:session\"",
+    "clean": "rm -f ./logs/*",
     "postinstall": "mkdir -p src/session/node_modules",
     "prebuild": "npm run clean"
   },
@@ -45,6 +47,7 @@
     "@types/winston": "^2.4.4",
     "babel-loader": "^8.0.5",
     "chalk": "^2.4.1",
+    "concurrently": "^4.1.0",
     "copy-webpack-plugin": "^4.5.2",
     "css-loader": "^1.0.0",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",

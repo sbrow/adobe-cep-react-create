@@ -1,15 +1,22 @@
 import * as React from "react";
 // import { useState } from "react";
-
-import * as $ from "jquery";
 import { Form } from "./components/Form";
+import controller from "./controller";
+import { StoreProvider } from "./Stores/AppStore";
 
 export function App(props: { title?: string }) {
-    document.title = props.title;
+    document.title = props.title || "";
     return (
         <div>
-            <Form />
-            <button>Hello</button>
+            <StoreProvider>
+                <Form />
+                <button onClick={() => {
+                    window.session.run("Home").then((home) => {
+                        controller.info(home);
+                    });
+                }
+                }>Home</button>
+            </StoreProvider>
         </div>
     );
 }

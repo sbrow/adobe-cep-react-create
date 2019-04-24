@@ -39,7 +39,7 @@ function getOutPoint() {
     const item = projectItem(0);
     if (item !== null && item.type === ProjectItemType.CLIP) {
         const clip = item as Clip;
-        alert(clip.getOutPoint());
+        alert(JSON.stringify(clip.getOutPoint()));
     }
 }
 
@@ -49,7 +49,7 @@ function getOutPoint() {
 function stripAudio() {
     const item = projectItem(0);
     if (item !== null) {
-        alert(item.type);
+        alert(`${item.type}`);
         if (item.type === ProjectItemType.CLIP) {
             const clip = item as Clip;
             clip.createSubClip("clip", clip.startTime(), clip.getOutPoint(), 0, 0, 1);

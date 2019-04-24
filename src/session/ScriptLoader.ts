@@ -60,12 +60,9 @@ class ScriptLoader {
         const evalString = `${functionName}(${paramsString})`;
         const that = this;
         const id = this.getID();
-
         return new Promise((resolve, reject) => {
             const callback = function (result: any) {
-                // console.log('weird' + eval_res)
                 if (typeof result === "string") {
-                    // console.log(eval_res)
                     if (result.toLowerCase().indexOf("error") != -1) {
                         that.log("err eval");
                         reject(that.createScriptError(result));
