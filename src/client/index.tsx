@@ -18,7 +18,6 @@ window.onerror = (event: string | Event, source?: any, fileno?: any, columnNumbe
     console.error(error);
     if (controller.hasSession()) {
         const source = (typeof event === "string") ? event : event.type;
-        // @ts-ignore
         window.session.logger.log("error", error.message, { source });
     }
 };
