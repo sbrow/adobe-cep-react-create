@@ -6,10 +6,10 @@ import { Block, IFormState, ProjectItemType, SetAction } from "../Types";
 export const importOption = "Import new...";
 
 export class AppStore {
-    public availableVideos: string[];
+    public availableVideos: SimpleProjectItem[];
     public level: string;
     public numBlocks: number;
-    public library: string[];
+    public bins: string[];
     public intro: string;
     public warmup: string;
     public blocks: Block[];
@@ -22,7 +22,7 @@ export class AppStore {
         this.warmup = init.warmup;
         this.blocks = init.blocks;
         this.outro = init.outro;
-        this.library = init.library || [];
+        this.bins = init.bins || [];
         this.availableVideos = init.availableVideos || ["", importOption];
     }
 
@@ -80,7 +80,7 @@ export class AppStore {
     public videos(): string[] {
         const imports = new Array<string>();
         try {
-            const push = (...items: string[]) => {
+            const push = (...items: SimpleProjectItem[]) => {
                 items.forEach((item) => {
                     switch (item) {
                         case undefined:
@@ -88,7 +88,12 @@ export class AppStore {
                         case "":
                             break;
                         default:
-                            imports.push(item);
+                            for (const video of this.availableVideos) {
+                                if (video.name === item) {
+                                    imports.push(video);
+                                    break;
+                                }
+                            }
                     }
                 });
             };
@@ -194,10 +199,10 @@ export const initState = new AppStore({
         intro: "",
     }],
     level: "",
-    library: [""],
-    numBlocks: 1,
     // @todo investigate.
-    // library: getBins(),
+    // bins: getBins(),
+    bins: [],
+    numBlocks: 1,
 });
 
 export const StoreContext = createContext<[AppStore, React.Dispatch<SetAction>]>([
@@ -215,13 +220,12 @@ export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction
 
     async function updateBins(): Promise<boolean> {
         try {
-            const functionName = "getBins";
-            // controller.info("Waiting for bins...", { source });
-            let bins = await window.session.run(functionName);
-            // controller.info("Bins received.", { source });
-            bins = ["", ...bins];
-            if (bins !== state.library) {
-                dispatch({ type: "set", source, payload: { key: "library", value: bins } });
+            const functionName = "getBinsJSON";
+            controller.debug("Waiting for bins...", { source });
+            const bins = await window.session.run(functionName);
+            controller.debug("Bins received.", { source });
+            if (state.bins !== bins) {
+                dispatch({ type: "set", source, payload: { key: "bins", value: bins } });
                 return true;
             }
         } catch (error) {
@@ -233,14 +237,13 @@ export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction
     async function updateAvail(): Promise<boolean> {
         try {
             const binName = (state.level === "") ? undefined : state.level;
-            const projectItems: Array<{ name: string, type: number }> = await window.session.run("listProjectItemsJSON", binName);
-            const videos: string[] = [""];
+            const projectItems: SimpleProjectItem[] = await window.session.run("listProjectItemsJSON", binName);
+            const videos: string[] = [];
             for (const item of projectItems) {
                 if (item.type === ProjectItemType.Clip) {
-                    videos.push(item.name);
+                    videos.push(item);
                 }
             }
-            videos.push(importOption);
             if (state.availableVideos !== videos) {
                 dispatch({ type: "set", source, payload: { key: "availableVideos", value: videos } });
                 return true;

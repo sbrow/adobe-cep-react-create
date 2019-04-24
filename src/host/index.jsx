@@ -1,36 +1,24 @@
 // @include "./test.jsx"
 
-if (typeof($) == 'undefined')
-    $ = {}
-
 $._ext = {
-    //Evaluate a file and catch the exception.
-    evalFile: function(path) {
+    // Evaluate a file and catch the exception.
+    evalFile(path) {
         try {
             $.evalFile(path);
         } catch (e) {
-            alert("Exception:" + e)
+            alert("Exception:" + e);
         }
     },
     // Evaluate all the files in the given folder
-    evalFiles: function(jsxFolderPath) {
-        var folder = new Folder(jsxFolderPath)
+    evalFiles(jsxFolderPath) {
+        const folder = new Folder(jsxFolderPath);
         if (folder.exists) {
-            var jsxFiles = folder.getFiles("*.jsx")
-            for (var i = 0; i < jsxFiles.length; i++) {
-                var jsxFile = jsxFiles[i]
-                $._ext.evalFile(jsxFile)
+            const jsxFiles = folder.getFiles("*.jsx");
+            for (let i = 0; i < jsxFiles.length; i++) {
+                const jsxFile = jsxFiles[i];
+                $._ext.evalFile(jsxFile);
             }
         }
     },
-    testAlert: function() {
-        testAlert()
-    }
-}
-
-// // fileName is a String (with the .jsx extension included)
-// function loadJSX(fileName) {
-//     var csInterface = new CSInterface();
-//     var extensionRoot = csInterface.getSystemPath(SystemPath.EXTENSION) + "/jsx/";
-//     csInterface.evalScript('$.evalFile("' + extensionRoot + fileName + '")');
-// }
+    testAlert,
+};

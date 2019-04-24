@@ -1,6 +1,6 @@
+// Doesn't work.
 function newSequence() {
     const project = app.project;
-    // Didn't work
     // project.openSequence(new Sequence("12"));
 
     project.createNewSequence("name", "12");
@@ -36,11 +36,9 @@ function projectItem(index: number): ProjectItem | null {
 }
 
 function getOutPoint() {
-    const item = projectItem(0);
-    if (item !== null && item.type === ProjectItemType.CLIP) {
-        const clip = item as Clip;
-        alert(JSON.stringify(clip.getOutPoint()));
-    }
+    const project = app.project;
+    const seq = project.activeSequence;
+    return seq.getOutPoint();
 }
 
 /**
@@ -57,15 +55,13 @@ function stripAudio() {
     }
 }
 
-// function insertClip() {
-//     const project = app.project;
-//     const sequence = project.activeSequence;
-//     const video = sequence.videoTracks[0];
-//     const clip = projectItem(0);
-//     const inTime = 0;
-//     const length = inTime + clip.getOutPoint().seconds;
+function getTimebase() {
+    const project = app.project;
+    const seq = project.activeSequence;
+    return JSON.stringify(seq.timebase);
+}
 
-//     video.insertClip(clip, 0);
-//     alert(length);
-//     return length;
-// }
+function test_host(jsonString: JSONString) {
+    const res = JSON.parse(jsonString);
+    return `hola from extendscript "${res.name}"`;
+}

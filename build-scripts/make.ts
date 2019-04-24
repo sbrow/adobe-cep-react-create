@@ -9,6 +9,8 @@ const srcDir = path.join(root, "src");
 
 console.log("Syncing tslint.json files...");
 execSync(`echo ./src/client ./src/host ./src/session | xargs -n 1 cp ./tslint.json`);
+console.log("Copying type definitions from host to client.");
+execSync(`cp ./src/host/types/host.d.ts ./src/client/types`);
 
 const key = "compilerOptions.outDir";
 const value = path.join(destinationFolder, extensionBundleId, "host");

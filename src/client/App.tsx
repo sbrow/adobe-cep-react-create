@@ -10,12 +10,6 @@ export function App(props: { title?: string }) {
         <div>
             <StoreProvider>
                 <Form />
-                <button onClick={() => {
-                    window.session.run("Home").then((home) => {
-                        controller.info(home);
-                    });
-                }
-                }>Home</button>
             </StoreProvider>
         </div>
     );

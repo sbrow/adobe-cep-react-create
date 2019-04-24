@@ -1,6 +1,6 @@
 import { checkPropTypes } from "prop-types";
 import * as React from "react";
-import { StoreContext } from "../Stores/AppStore";
+import { importOption, StoreContext } from "../Stores/AppStore";
 
 interface OptionProps {
     value: string;
@@ -21,6 +21,8 @@ interface DropdownProps {
     options: any[] | string;
     id: string;
     parent?: any;
+    allowEmpty?: boolean;
+    allowImport?: boolean;
 }
 
 /**
@@ -34,9 +36,27 @@ export function Dropdown(props: DropdownProps): JSX.Element {
         dispatch({ type: "set", source: "Dropdown", payload: { key: props.id, value: event.target.value } });
     };
 
-    let options: any = (props.options instanceof Array) ? props.options : state[props.options];
-    if (!(options instanceof Array)) {
-        options = [];
+    const options = [];
+    if (props.options instanceof Array) {
+        options.push(...props.options);
+    } else {
+        const opts = state.get(props.options);
+        if (opts instanceof Array) {
+
+            options.push(...opts);
+        }
+    }
+    if (props.allowEmpty === true) {
+        options.unshift("");
+    }
+    if (props.allowImport === true) {
+        options.push(importOption);
+    }
+    for (let i = 0; i < options.length; i++) {
+
+        if (typeof options[i] === "object") {
+            options[i] = options[i].name;
+        }
     }
     return (
         <div id={props.id} class="row">

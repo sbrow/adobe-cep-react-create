@@ -6,8 +6,8 @@ export interface IFormState {
     numBlocks: number;
     [key: string]: any;
     blocks: any[];
-    library?: string[];
-    availableVideos?: string[];
+    bins?: string[];
+    availableVideos?: SimpleProjectItem[];
 }
 export interface SetAction extends Action {
     type: "set";

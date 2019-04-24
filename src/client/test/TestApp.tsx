@@ -4,14 +4,12 @@ import * as React from "react";
 import { Session } from "../../session/Session";
 import controller from "../controller";
 
-const session: Session = window.session;
-
 function run(fnName: string, args?: any): void {
     try {
-        session.scriptLoader().evalScript(fnName, args).then((res) => {
-            this.log("succeeded.");
+        window.session.scriptLoader.evalScript(fnName, args).then((res) => {
             if (res !== undefined) {
                 controller.info(`Returned: '${res}'`, { source: "TestApp.run" });
+                window.alert(`${fnName} Returned: '${res}'`);
             }
         });
     } catch (e) {
@@ -28,7 +26,7 @@ function RunBtn(props: { fn: string, args?: any; }) {
     }
     return (<button onClick={handleClick}>{props.fn}</button>);
 }
-export function App() {
+export function App(props: { title?: string }) {
     return (
         <div>
             <RunBtn fn="itemChildren" />
@@ -40,6 +38,7 @@ export function App() {
             <br />
             <RunBtn fn="insertClip" />
             <RunBtn fn="newSequence" />
+            <RunBtn fn="getTimebase" />
         </div>
     );
 }
