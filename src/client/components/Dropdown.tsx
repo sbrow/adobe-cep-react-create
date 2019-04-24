@@ -1,5 +1,6 @@
 import { checkPropTypes } from "prop-types";
 import * as React from "react";
+import controller from "../controller";
 import { importOption, StoreContext } from "../Stores/AppStore";
 
 interface OptionProps {
@@ -32,11 +33,9 @@ interface DropdownProps {
  */
 export function Dropdown(props: DropdownProps): JSX.Element {
     const [state, dispatch] = React.useContext(StoreContext);
-    const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        dispatch({ type: "set", source: "Dropdown", payload: { key: props.id, value: event.target.value } });
-    };
-
+    const source = "Dropdown";
     const options = [];
+
     if (props.options instanceof Array) {
         options.push(...props.options);
     } else {
@@ -58,6 +57,18 @@ export function Dropdown(props: DropdownProps): JSX.Element {
             options[i] = options[i].name;
         }
     }
+
+    const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        dispatch({ type: "set", source, payload: { key: props.id, value: event.target.value } });
+        if (event.target.value === importOption) {
+            window.session.run("importVideo").then((result) => {
+                const value = result || "";
+                dispatch({ type: "set", source, payload: { key: props.id, value } });
+            }).catch((error) => {
+                controller.error(error, { source });
+            });
+        }
+    };
     return (
         <div id={props.id} class="row">
             <label htmlFor={`${props.id}-data`}>{props.label}</label>

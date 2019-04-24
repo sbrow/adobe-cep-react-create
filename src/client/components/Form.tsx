@@ -29,9 +29,9 @@ export function Form(): JSX.Element {
         window.session.run("insertClips", state.videos());
     };
 
-    /*    useEffect(() => {
-           Update(state, dispatch);
-       }, [state]); */
+    useEffect(() => {
+        Update(state, dispatch);
+    });
 
     return (<React.Fragment>
         <form onSubmit={handleSubmit}>
@@ -46,6 +46,6 @@ export function Form(): JSX.Element {
             <Dropdown id="outro" label="outro" options="availableVideos" allowEmpty={true} allowImport={true} />
             <Refresh /><input type="submit" value="submit" />
         </form>
-        <Display />
+        {/* <Display /> */}
     </React.Fragment>);
 }
