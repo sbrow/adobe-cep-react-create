@@ -26,7 +26,9 @@ class ScriptLoader {
         const cs = this.cs;
         const extensionRoot = cs.getSystemPath(SystemPath.EXTENSION) + "/host/";
 
-        cs.evalScript('$.evalFile("' + extensionRoot + fileName + '")');
+        cs.evalScript('$.evalFile("' + extensionRoot + fileName + '")', (result: any) => {
+            this.logger.info("", { source: "CSInterface.evalScript", result });
+        });
     }
 
     /**
@@ -77,6 +79,7 @@ class ScriptLoader {
      */
     public log(val: string) {
         console.log(`${this.name} ${val}`);
+        this.logger.info(val, { source: this.name });
     }
 
     get name() {

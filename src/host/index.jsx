@@ -1,4 +1,4 @@
-#include "./test.jsx"
+// @include "./test.jsx"
 
 if (typeof($) == 'undefined')
     $ = {}

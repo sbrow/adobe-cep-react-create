@@ -1,0 +1,1 @@
+declare function alert(message: any): void;
