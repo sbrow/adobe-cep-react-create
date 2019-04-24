@@ -25,7 +25,6 @@ export function Form(): JSX.Element {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // window.alert(state.videos());
         window.session.run("insertClips", state.videos());
     };
 
@@ -35,16 +34,22 @@ export function Form(): JSX.Element {
 
     return (<React.Fragment>
         <form onSubmit={handleSubmit}>
-            <h2>Intro</h2>
-            <Dropdown id="level" label="Workout Level" options="bins" allowEmpty={true} />
-            <Dropdown id="numBlocks" label="# of Blocks" options={numBlocks} />
-            <Dropdown id="intro" label="Intro" options="availableVideos" allowEmpty={true} allowImport={true} />
-            <Dropdown id="warmup" label="warmup" options="availableVideos" allowEmpty={true} allowImport={true} />
-            <h2>Blocks</h2>
-            <Blocks />
-            <h2>Conclusion</h2>
-            <Dropdown id="outro" label="outro" options="availableVideos" allowEmpty={true} allowImport={true} />
-            <Refresh /><input type="submit" value="submit" />
+            <section>
+                <h2>Intro</h2>
+                <Dropdown id="level" label="Workout Level" options="bins" allowEmpty={true} />
+                <Dropdown id="numBlocks" label="# of Blocks" options={numBlocks} />
+                <Dropdown id="intro" label="Intro" options="availableVideos" allowEmpty={true} allowImport={true} />
+                <Dropdown id="warmup" label="warmup" options="availableVideos" allowEmpty={true} allowImport={true} />
+            </section>
+            <section>
+                <h2>Blocks</h2>
+                <Blocks />
+            </section>
+            <section>
+                <h2>Conclusion</h2>
+                <Dropdown id="outro" label="outro" options="availableVideos" allowEmpty={true} allowImport={true} />
+            </section>
+            <Refresh /><button type="submit">Submit</button>
         </form>
         {/* <Display /> */}
     </React.Fragment>);

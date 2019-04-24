@@ -59,14 +59,16 @@ export function Dropdown(props: DropdownProps): JSX.Element {
     }
 
     const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        dispatch({ type: "set", source, payload: { key: props.id, value: event.target.value } });
         if (event.target.value === importOption) {
-            window.session.run("importVideo").then((result) => {
+            window.session.run("importVideo", state.level).then((result) => {
                 const value = result || "";
+                controller.debug(`result ${JSON.stringify(result)}`, { source });
                 dispatch({ type: "set", source, payload: { key: props.id, value } });
             }).catch((error) => {
                 controller.error(error, { source });
             });
+        } else {
+            dispatch({ type: "set", source, payload: { key: props.id, value: event.target.value } });
         }
     };
     return (
