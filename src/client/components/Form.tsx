@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useContext, useEffect } from "react";
+import packageInfo from "../../../package.json";
 import controller from "../controller";
 import { StoreContext, Update } from "../Stores/AppStore";
 import { Blocks } from "./Blocks";
@@ -52,5 +53,6 @@ export function Form(): JSX.Element {
             <Refresh /><button type="submit">Submit</button>
         </form>
         {/* <Display /> */}
+        <footer><p>V{packageInfo.version}</p></footer>
     </React.Fragment>);
 }

@@ -32,6 +32,7 @@ button {
   border-radius: 25px;
   background-color: rgb(21,21,21);
   color: var(--text-color);
+  margin: 2px;
 }
 
 button:hover {
