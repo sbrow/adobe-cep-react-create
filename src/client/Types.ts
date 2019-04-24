@@ -18,8 +18,9 @@ export interface SetAction extends Action {
     };
 }
 
-export interface Block {
+export interface BlockStore {
     intro: string;
+    rounds: number;
     warmup?: string;
     exercises: string[];
 }
@@ -27,7 +28,7 @@ export interface Block {
 export interface Workout {
     intro: string;
     warmup?: string;
-    blocks?: Block[];
+    blocks?: BlockStore[];
     outro?: string;
 }
 
@@ -36,4 +37,10 @@ export enum ProjectItemType {
     Bin,
     Root,
     File,
+}
+export interface NumberInputProps {
+    id: string;
+    label: string;
+    min?: number;
+    max?: number;
 }
