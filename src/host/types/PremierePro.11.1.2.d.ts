@@ -594,7 +594,7 @@ declare class Project extends PremiereObject
     /**
      * Returns 0 if Premiere Pro successfully imports a sequence with the specified name and ID.
      */
-    createNewSequence(sequenceName: string, placeholderID: string): void;
+    createNewSequence(sequenceName: string, placeholderID: string): Sequence | undefined;
     deleteAsset(): void;
     /**
      * Returns true if Premiere Pro successfully deleted a sequence with the specified ID.

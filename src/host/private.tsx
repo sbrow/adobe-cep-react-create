@@ -115,6 +115,17 @@ function getProjectItemFromPath(path: string): ProjectItem {
     return part;
 }
 
+function createNewSequence(): boolean {
+    const makeNew = confirm("There is no active sequence, would you like to create a new one?", false);
+    if (makeNew) {
+        const newSequence: Sequence | undefined = app.project.createNewSequence("New Sequence", "");
+        return (newSequence !== undefined);
+    } else {
+        alert("Please open a sequence in the timeline and try again.");
+        return false;
+    }
+}
+
 /**
  * Inserts a clip into the active sequence at the specified time.
  *
@@ -128,8 +139,10 @@ function insert(clip: Clip, inTime: Ticks = 0): Ticks | undefined {
         return undefined;
     }
     if (app.project.activeSequence === undefined) {
-        alert("There is no active sequence.");
-        return undefined;
+        const success = createNewSequence();
+        if (!success) {
+            return undefined;
+        }
     }
 
     const sequence = app.project.activeSequence;

@@ -143,12 +143,12 @@ export const session = new Session({
     level: "info",
     transports: [
         new transports.File({
-            filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/main.log",
-            level: "debug",
+            filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/info.log",
+            // format: format.cli(),
         }),
         new transports.File({
-            filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/simple.log",
-            format: format.cli(),
+            filename: "/Users/sbrow/Documents/GitHub/cep-react/logs/debug.log",
+            level: "debug",
         }),
     ],
 });

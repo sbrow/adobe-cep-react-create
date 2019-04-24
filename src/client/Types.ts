@@ -26,3 +26,10 @@ export interface BlockStore {
     warmup?: string;
     exercises: string[];
 }
+
+export enum ProjectItemType {
+    CLIP = 1,
+    BIN = 2,
+    ROOT = 3,
+    FILE = 4,
+}

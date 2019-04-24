@@ -210,7 +210,7 @@ export async function Update(state: AppStore, dispatch: React.Dispatch<SetAction
             const projectItems: SimpleProjectItem[] = await window.session.run("listProjectItemsJSON", binName);
             const videos: SimpleProjectItem[] = [];
             for (const item of projectItems) {
-                if (item.type === ProjectItemType.Clip) {
+                if (item.type === ProjectItemType.CLIP) {
                     videos.push(item);
                 }
             }
