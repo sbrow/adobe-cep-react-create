@@ -9,7 +9,7 @@ const { execSync } = require("child_process");
 const utils = require("./utils.js");
 const webpack = require("webpack");
 const pluginConfig = require("../pluginrc.js");
-const env = (process.env.npm_config_production.match(/1|true/)) ? "production" : "development";
+var env = (process.env.npm_config_production !== undefined && process.env.npm_config_production.match(/1|true/)) ? "production" : "development";
 const isDev = env === "development";
 const distDir = pluginConfig.destinationFolder;
 const pluginDir = path.join(distDir, pluginConfig.extensionBundleId);
@@ -24,32 +24,16 @@ build();
 
 function build() {
     try {
-        // delete the dist
-        utils.log_progress("cleaning dist...");
-        utils.deleteFolderRecursive(distDir);
-        // create dist
+        utils.log_progress("creating dist folder...");
         fs.mkdirSync(distDir);
         fs.mkdirSync(pluginDir);
-        // bundle the client
-        utils.log_progress("bundeling client...");
-        // var config = require('../webpack.client.config.js')
-        // webpack(config, (err, stats) => {
-        //   if (err) {
-        //     console.error(err);
-        //     return;
-        //   }
-        //
-        //   console.log(stats.toString({
-        //     chunks: false,  // Makes the build much quieter
-        //     colors: true    // Shows colors in the console
-        //   }));
-        // });
 
+        utils.log_progress("bundling client...");
         execSync(`webpack --config ${webpack_client_config_path} --display normal --display-chunks --env.target=node --mode ${env}`, { stdio: [0, 1, 2] });
-        // bundle the session
+
         utils.log_progress("bundeling session...");
         execSync(`webpack --config ${webpack_session_config_path} --display normal --display-chunks --env.target=node --mode ${env}`, { stdio: [0, 1, 2] });
-        // copy the host code
+
         utils.log_progress("transpiling host code...");
         execSync("tsc -p ./src/host/tsconfig.json", { stdio: [0, 1, 2] });
         // utils.copyRecursiveSync(fromSrc('host/out'), fromPlugin('host'))
