@@ -1,6 +1,7 @@
 /**
  * This file contains functions that are not safe to call from the outside- due to not returning strings.
  */
+// @include "videoFormat.jsx"
 
 const projectItemTypes: number[] = [
     ProjectItemType.CLIP,
@@ -13,6 +14,22 @@ const defaultFilter: ItemFilter = {
     depth: -1,
     types: projectItemTypes,
 };
+
+const videoFormats = {
+    102: new VideoFormat("TIMEDISPLAY_2997DropTimecode", 29.97),
+};
+
+const TicksPerSecond = 254016000000;
+
+function secondsPerFrame(timebase: JSONString): JSONString {
+    return JSON.stringify(Number(timebase) / TicksPerSecond);
+}
+
+function ticksToSecond(ticks: JSONString, timebase: JSONString, fps: number): JSONString {
+    const frames = Number(ticks) / Number(timebase);
+    const ret = (frames / fps);
+    return JSON.stringify(ret);
+}
 
 function getProjectItem(
     name: string,
