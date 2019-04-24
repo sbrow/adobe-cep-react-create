@@ -43,6 +43,10 @@ type MetadataPropertyType = 0 | 1 | 2 | 3;
  */
 type ProjectItemTypeOptions = 1 | 2 | 3 | 4;
 
+interface SequenceSettings {
+    videoDisplayFormat: number;
+}
+
 /**
  * 0 = entire sequence (see: Encoder.ENCODE_ENTIRE),
  * 1 = in to out points (see: Encoder.ENCODE_IN_TO_OUT),
